@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+  <name>teraranger</name>
+  <version>0.0.0</version>
+  <description>The teraranger package</description>
+
+  <maintainer email="mateusz.sadowski@terabee.com">Mateusz Sadowski</maintainer>
+  <maintainer email="krzysztof.zurad@terabee.com">Krzysztof Żurad</maintainer>
+  <maintainer email="pierre-louis.kabaradjian@terabee.com">Pierre-Louis Kabaradjian</maintainer>
+  <maintainer email="baptiste.potier@terabee.com">Baptiste Potier</maintainer>
+
+  <license>GPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <export>
+  </export>
+</package>
