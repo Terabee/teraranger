@@ -24,12 +24,12 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(teraranger_evo src/teraranger_evo.cpp src/serial_port.cpp src/helper_lib.cpp)
-target_link_libraries(teraranger_evo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-#add_dependencies(teraranger_evo ${${PROJECT_NAME}_EXPORTED_TARGETS})
-#add_dependencies(teraranger_evo ${PROJECT_NAME}_gencfg)
+add_executable(evo src/teraranger_evo.cpp src/serial_port.cpp src/helper_lib.cpp)
+target_link_libraries(evo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+#add_dependencies(evo ${${PROJECT_NAME}_EXPORTED_TARGETS})
+#add_dependencies(evo ${PROJECT_NAME}_gencfg)
 
 install( TARGETS
-  teraranger_evo
+  evo
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
