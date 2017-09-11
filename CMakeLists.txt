@@ -30,24 +30,24 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(teraranger_evo src/teraranger_evo.cpp src/serial_port.cpp src/helper_lib.cpp)
-target_link_libraries(teraranger_evo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-#add_dependencies(teraranger_evo ${${PROJECT_NAME}_EXPORTED_TARGETS})
-#add_dependencies(teraranger_evo ${PROJECT_NAME}_gencfg)
+add_executable(evo src/teraranger_evo.cpp src/serial_port.cpp src/helper_lib.cpp)
+target_link_libraries(evo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+#add_dependencies(evo ${${PROJECT_NAME}_EXPORTED_TARGETS})
+#add_dependencies(evo ${PROJECT_NAME}_gencfg)
 
-add_executable(teraranger_duo src/teraranger_duo.cpp src/serial_port.cpp)
-add_dependencies(teraranger_duo  ${catkin_EXPORTED_TARGETS})
-add_dependencies(teraranger_duo ${PROJECT_NAME}_gencfg)
-target_link_libraries(teraranger_duo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_executable(duo src/duo.cpp src/serial_port.cpp)
+add_dependencies(duo  ${catkin_EXPORTED_TARGETS})
+add_dependencies(duo ${PROJECT_NAME}_gencfg)
+target_link_libraries(duo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-add_executable(teraranger_one src/teraranger_one.cpp src/serial_port.cpp)
-add_dependencies(teraranger_one  ${catkin_EXPORTED_TARGETS})
-add_dependencies(teraranger_one ${PROJECT_NAME}_gencfg)
-target_link_libraries(teraranger_one ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_executable(one src/one.cpp src/serial_port.cpp)
+add_dependencies(one  ${catkin_EXPORTED_TARGETS})
+add_dependencies(one ${PROJECT_NAME}_gencfg)
+target_link_libraries(one ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 install( TARGETS
-  teraranger_evo
-  teraranger_one
-  teraranger_duo
+  evo
+  one
+  duo
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
