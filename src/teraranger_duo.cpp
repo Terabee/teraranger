@@ -47,23 +47,28 @@ TerarangerDuo::TerarangerDuo()
   // Get paramters
   ros::NodeHandle private_node_handle_("~");
   private_node_handle_.param("portname", portname_, std::string("/dev/ttyUSB0"));
-  private_node_handle_.param("topicname", topicname_, std::string("teraranger/timeofflight"));
-  private_node_handle_.param("topicnamei", topicname_i_, std::string("teraranger/ultrasound"));
+  private_node_handle_.param("topicname", topicname_, std::string("teraranger_duo/infrared"));
+  private_node_handle_.param("topicnamei", topicname_i_, std::string("teraranger_duo/ultrasound"));
 
   // Publishers
   range_publisher_ = nh_.advertise<sensor_msgs::Range>(topicname_, 1);
   range_publisher_i_ = nh_.advertise<sensor_msgs::Range>(topicname_i_, 1);
 
-  // Create serial port
-  serial_port_ = new SerialPort();
+  // Serial Port init
+  serial_port_.setPort(portname_);
+  serial_port_.setBaudrate(SERIAL_SPEED);
+  serial_port_.setParity(serial::parity_none);
+  serial_port_.setStopbits(serial::stopbits_one);
+  serial_port_.setBytesize(serial::eightbits);
+  serial::Timeout to = serial::Timeout::simpleTimeout(SERIAL_TIMEOUT_MS);
+  serial_port_.setTimeout(to);
 
-  // Set callback function for for the serial port
-  serial_data_callback_function_duo_ = boost::bind(&TerarangerDuo::serialDataCallbackDuo, this, _1);
-  serial_port_->setSerialCallbackFunction(&serial_data_callback_function_duo_);
+  serial_port_.open();
 
   // Connect serial port
-  if (!serial_port_->connect(portname_))
+  if(!serial_port_.isOpen())
   {
+    ROS_ERROR("Could not open : %s ", portname_.c_str());
     ros::shutdown();
     return;
   }
@@ -223,7 +228,11 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
 
 void TerarangerDuo::setMode(const char *c)
 {
-  serial_port_->sendChar(c, 1);
+  if(!serial_port_.write((uint8_t*)c, CMD_BYTE_LENGTH))// 1 byte commands
+  {
+    ROS_ERROR("Timeout or error while writing serial");
+  }
+  serial_port_.flushOutput();
 }
 
 void TerarangerDuo::dynParamCallback(const teraranger::TerarangerDuoConfig &config, uint32_t level)
@@ -245,14 +254,31 @@ void TerarangerDuo::dynParamCallback(const teraranger::TerarangerDuoConfig &conf
 
 }
 
+void TerarangerDuo::spin()
+{
+  static uint8_t buffer[1];
+  while(ros::ok())
+  {
+    if(serial_port_.read(buffer, 1))
+    {
+      serialDataCallbackDuo(buffer[0]);
+    }
+    else
+    {
+      ROS_ERROR("Timeout or error while reading serial");
+    }
+    ros::spinOnce();
+  }
+}
+
 } // namespace teraranger
 
 int main(int argc, char **argv)
 {
 
-  ros::init(argc, argv, "terarangerduo");
-  teraranger::TerarangerDuo tera_bee;
-  ros::spin();
+  ros::init(argc, argv, "teraranger_duo");
+  teraranger::TerarangerDuo duo;
+  duo.spin();
 
   return 0;
 }

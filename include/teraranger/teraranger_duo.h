@@ -45,20 +45,24 @@
 
 #include <string>
 
-#include "teraranger/serial_port.h"
-#include "teraranger/TerarangerDuoConfig.h"
+#include <serial/serial.h>
+#include <teraranger/TerarangerDuoConfig.h>
 
 #define BUFFER_SIZE_DUO 7
+
+#define SERIAL_SPEED 115200
+#define SERIAL_TIMEOUT_MS 1000
+#define CMD_BYTE_LENGTH 1
 
 namespace teraranger
 {
 
-static const char PRECISE_MODE[1] = {'P'};
-static const char FAST_MODE[1] = {'F'};
-static const char OUTDOOR_MODE[1] = {'O'};
+static const char PRECISE_MODE[CMD_BYTE_LENGTH] = {'P'};
+static const char FAST_MODE[CMD_BYTE_LENGTH] = {'F'};
+static const char OUTDOOR_MODE[CMD_BYTE_LENGTH] = {'O'};
 
-static const char BINARY_MODE[1] = {'B'};
-static const char TEXT_MODE[1] = {'T'};
+static const char BINARY_MODE[CMD_BYTE_LENGTH] = {'B'};
+static const char TEXT_MODE[CMD_BYTE_LENGTH] = {'T'};
 
 static const uint8_t crc_table[] = {0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15, 0x38, 0x3f, 0x36, 0x31, 0x24, 0x23,
                                     0x2a, 0x2d, 0x70, 0x77, 0x7e, 0x79, 0x6c, 0x6b, 0x62, 0x65, 0x48, 0x4f, 0x46, 0x41,
@@ -101,8 +105,10 @@ public:
   dynamic_reconfigure::Server<teraranger::TerarangerDuoConfig> dyn_param_server_;
   dynamic_reconfigure::Server<teraranger::TerarangerDuoConfig>::CallbackType dyn_param_server_callback_function_;
 
-  SerialPort * serial_port_;
+  serial::Serial serial_port_;
   boost::function<void(uint8_t)> serial_data_callback_function_duo_;
+
+  void spin();
 
   int portnum_;
   std::string portname_;
