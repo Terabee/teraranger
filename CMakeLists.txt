@@ -136,6 +136,10 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/teraranger_node.cpp)
 
 # make the executables
+add_executable( terarangerduo_node src/terarangerduo.cpp src/serial_port.cpp  )
+add_dependencies( terarangerduo_node  ${catkin_EXPORTED_TARGETS} )
+add_dependencies(terarangerduo_node ${PROJECT_NAME}_gencfg)
+target_link_libraries( terarangerduo_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
 
 add_executable( terarangerone_node src/terarangerone.cpp src/serial_port.cpp  )
 add_dependencies( terarangerone_node  ${catkin_EXPORTED_TARGETS} )
