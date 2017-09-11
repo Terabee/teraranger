@@ -51,16 +51,21 @@ TerarangerOne::TerarangerOne()
   // Publishers
   range_publisher_ = nh_.advertise<sensor_msgs::Range>("terarangerone", 1);
 
-  // Create serial port
-  serial_port_ = new SerialPort();
+  // Serial Port init
+  serial_port_.setPort(portname_);
+  serial_port_.setBaudrate(SERIAL_SPEED);
+  serial_port_.setParity(serial::parity_none);
+  serial_port_.setStopbits(serial::stopbits_one);
+  serial_port_.setBytesize(serial::eightbits);
+  serial::Timeout to = serial::Timeout::simpleTimeout(SERIAL_TIMEOUT_MS);
+  serial_port_.setTimeout(to);
 
-  // Set callback function for the serial ports
-  serial_data_callback_function_ = boost::bind(&TerarangerOne::serialDataCallback, this, _1);
-  serial_port_->setSerialCallbackFunction(&serial_data_callback_function_);
+  serial_port_.open();
 
   // Connect serial port
-  if (!serial_port_->connect(portname_))
+  if(!serial_port_.isOpen())
   {
+    ROS_ERROR("Could not open : %s ", portname_.c_str());
     ros::shutdown();
     return;
   }
@@ -161,7 +166,11 @@ void TerarangerOne::serialDataCallback(uint8_t single_character)
 
 void TerarangerOne::setMode(const char *c)
 {
-  serial_port_->sendChar(c, 1);
+  if(!serial_port_.write((uint8_t*)c, CMD_BYTE_LENGTH))// 1 byte commands
+  {
+    ROS_ERROR("Timeout or error while writing serial");
+  }
+  serial_port_.flushOutput();
 }
 
 void TerarangerOne::dynParamCallback(const teraranger::TerarangerOneConfig &config, uint32_t level)
@@ -182,13 +191,30 @@ void TerarangerOne::dynParamCallback(const teraranger::TerarangerOneConfig &conf
   }
 }
 
+void TerarangerOne::spin()
+{
+  static uint8_t buffer[1];
+  while(ros::ok())
+  {
+    if(serial_port_.read(buffer, 1))
+    {
+      serialDataCallback(buffer[0]);
+    }
+    else
+    {
+      ROS_ERROR("Timeout or error while reading serial");
+    }
+    ros::spinOnce();
+  }
+}
+
 } // namespace teraranger
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "terarangerone");
-  teraranger::TerarangerOne tera_bee;
-  ros::spin();
+  ros::init(argc, argv, "teraranger_one");
+  teraranger::TerarangerOne one;
+  one.spin();
 
   return 0;
 }
