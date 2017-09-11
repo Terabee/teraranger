@@ -1,8 +1,11 @@
 #pragma once
 
 #include <sensor_msgs/Range.h>
-#include "serial_port.h"
+#include <serial/serial.h>
 #include <ros/ros.h>
+
+#define SERIAL_SPEED 115200
+#define SERIAL_TIMEOUT_MS 1000
 
 namespace teraranger
 {
@@ -25,11 +28,13 @@ class TerarangerEvo
     ros::NodeHandle nh_;
     ros::Publisher range_publisher_;
 
-    SerialPort *serial_port_;
+    serial::Serial serial_port_;
     boost::function<void(uint8_t)> serial_data_callback_function_;
 
     std::string portname_;
     std::string ns_;
+
+    void spin();
 
   private:
     const float field_of_view = 0.0349066f;
