@@ -1,6 +1,4 @@
 #include <teraranger/teraranger_evo.h>
-#include <sensor_msgs/Range.h>
-#include <teraranger/helper_lib.h>
 
 namespace teraranger
 {

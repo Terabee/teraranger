@@ -3,6 +3,7 @@
 #include <sensor_msgs/Range.h>
 #include <serial/serial.h>
 #include <ros/ros.h>
+#include <teraranger/helper_lib.h>
 
 #define SERIAL_SPEED 115200
 #define SERIAL_TIMEOUT_MS 1000

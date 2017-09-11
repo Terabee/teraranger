@@ -34,10 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************/
-
-#include <string>
-
-#include "teraranger/teraranger_duo.h"
+#include <teraranger/teraranger_duo.h>
 
 namespace teraranger
 {
@@ -89,19 +86,6 @@ TerarangerDuo::~TerarangerDuo()
 {
 }
 
-uint8_t TerarangerDuo::crc8(uint8_t *p, uint8_t len)
-{
-  uint16_t i;
-  uint16_t crc = 0x0;
-
-  while (len--)
-  {
-    i = (crc ^ *p++) & 0xFF;
-    crc = (crc_table[i] ^ (crc << 8)) & 0xFF;
-  }
-  return crc & 0xFF;
-}
-
 void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
 {
   static uint8_t input_buffer[BUFFER_SIZE_DUO];
@@ -131,7 +115,7 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
     if (buffer_ctr == 4)
     {
       // end of feed, calculate
-      int16_t crc = crc8(input_buffer, 3);
+      int16_t crc = HelperLib::crc8(input_buffer, 3);
 
       if (crc == input_buffer[3])
       {
@@ -161,7 +145,7 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
     else if (buffer_ctr == 7)
     {
       // end of feed, calculate
-      int16_t crc = crc8(input_buffer, 6);
+      int16_t crc = HelperLib::crc8(input_buffer, 6);
 
       if (crc == input_buffer[6])
       {

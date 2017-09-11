@@ -36,7 +36,7 @@ target_link_libraries(evo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 #add_dependencies(evo ${${PROJECT_NAME}_EXPORTED_TARGETS})
 #add_dependencies(evo ${PROJECT_NAME}_gencfg)
 
-add_executable(duo src/teraranger_duo.cpp)
+add_executable(duo src/teraranger_duo.cpp src/helper_lib.cpp)
 add_dependencies(duo  ${catkin_EXPORTED_TARGETS})
 add_dependencies(duo ${PROJECT_NAME}_gencfg)
 target_link_libraries(duo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
