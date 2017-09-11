@@ -135,6 +135,13 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/teraranger_node.cpp)
 
+# make the executables
+
+add_executable( terarangerone_node src/terarangerone.cpp src/serial_port.cpp  )
+add_dependencies( terarangerone_node  ${catkin_EXPORTED_TARGETS} )
+add_dependencies(terarangerone_node ${PROJECT_NAME}_gencfg)
+target_link_libraries( terarangerone_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
