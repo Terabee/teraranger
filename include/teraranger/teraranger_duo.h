@@ -34,7 +34,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************/
-
 #ifndef TERARANGERDUO_TERARANGER_H_
 #define TERARANGERDUO_TERARANGER_H_
 

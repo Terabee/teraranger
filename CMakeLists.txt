@@ -41,7 +41,7 @@ add_dependencies(duo  ${catkin_EXPORTED_TARGETS})
 add_dependencies(duo ${PROJECT_NAME}_gencfg)
 target_link_libraries(duo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-add_executable(one src/teraranger_one.cpp)
+add_executable(one src/teraranger_one.cpp src/helper_lib.cpp)
 add_dependencies(one  ${catkin_EXPORTED_TARGETS})
 add_dependencies(one ${PROJECT_NAME}_gencfg)
 target_link_libraries(one ${catkin_LIBRARIES} ${Boost_LIBRARIES})

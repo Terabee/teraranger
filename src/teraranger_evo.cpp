@@ -2,6 +2,7 @@
 
 namespace teraranger
 {
+
 TerarangerEvo::TerarangerEvo()
 {
   // Get parameters and namespace

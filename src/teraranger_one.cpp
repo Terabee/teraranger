@@ -33,13 +33,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  ****************************************************************************/
-
-#include <string>
-
-#include "teraranger/teraranger_one.h"
+#include <teraranger/teraranger_one.h>
 
 namespace teraranger
-
 {
 
 TerarangerOne::TerarangerOne()
@@ -86,19 +82,6 @@ TerarangerOne::~TerarangerOne()
 {
 }
 
-uint8_t TerarangerOne::crc8(uint8_t *p, uint8_t len)
-{
-  uint16_t i;
-  uint16_t crc = 0x0;
-
-  while (len--)
-  {
-    i = (crc ^ *p++) & 0xFF;
-    crc = (crc_table[i] ^ (crc << 8)) & 0xFF;
-  }
-  return crc & 0xFF;
-}
-
 void TerarangerOne::serialDataCallback(uint8_t single_character)
 {
   static uint8_t input_buffer[BUFFER_SIZE];
@@ -123,7 +106,7 @@ void TerarangerOne::serialDataCallback(uint8_t single_character)
     if (buffer_ctr == 4)
     {
       // end of feed, calculate
-      int16_t crc = crc8(input_buffer, 3);
+      int16_t crc = HelperLib::crc8(input_buffer, 3);
 
       if (crc == input_buffer[3])
       {
