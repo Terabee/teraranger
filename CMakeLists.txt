@@ -31,17 +31,17 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(evo src/teraranger_evo.cpp src/serial_port.cpp src/helper_lib.cpp)
+add_executable(evo src/teraranger_evo.cpp src/helper_lib.cpp)
 target_link_libraries(evo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 #add_dependencies(evo ${${PROJECT_NAME}_EXPORTED_TARGETS})
 #add_dependencies(evo ${PROJECT_NAME}_gencfg)
 
-add_executable(duo src/teraranger_duo.cpp src/serial_port.cpp)
+add_executable(duo src/teraranger_duo.cpp)
 add_dependencies(duo  ${catkin_EXPORTED_TARGETS})
 add_dependencies(duo ${PROJECT_NAME}_gencfg)
 target_link_libraries(duo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-add_executable(one src/teraranger_one.cpp src/serial_port.cpp)
+add_executable(one src/teraranger_one.cpp)
 add_dependencies(one  ${catkin_EXPORTED_TARGETS})
 add_dependencies(one ${PROJECT_NAME}_gencfg)
 target_link_libraries(one ${catkin_LIBRARIES} ${Boost_LIBRARIES})
