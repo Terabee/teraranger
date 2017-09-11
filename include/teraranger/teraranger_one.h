@@ -3,7 +3,6 @@
  * Copyright (C) 2014 Flavio Fontana & Luis Rodrigues. All rights reserved.
  * Author: Flavio Fontana <fly.fontana@gmail.com>
  * Author: Luis Rodrigues <luis.rodrigues@terabee.com>
- * Author: Ehsan Asadi    <ehsan.asadi@gmail.com>
 
  *
  * Redistribution and use in source and binary forms, with or without
@@ -16,7 +15,7 @@
  * notice, this list of conditions and the following disclaimer in
  * the documentation and/or other materials provided with the
  * distribution.
- * 3. Neither the name TerarangerDuo nor the names of its contributors may be
+ * 3. Neither the name TerarangerOne nor the names of its contributors may be
  * used to endorse or promote products derived from this software
  * without specific prior written permission.
  *
@@ -35,8 +34,8 @@
  *
  ****************************************************************************/
 
-#ifndef TERARANGERDUO_TERARANGER_H_
-#define TERARANGERDUO_TERARANGER_H_
+#ifndef TERARANGERONE_TERARANGER_H_
+#define TERARANGERONE_TERARANGER_H_
 
 #include <ros/ros.h>
 #include <sensor_msgs/Range.h>
@@ -45,20 +44,20 @@
 
 #include <string>
 
-#include "terarangerduo/serial_port.h"
-#include "terarangerduo/TerarangerDuoConfig.h"
+#include "teraranger/serial_port.h"
+#include "teraranger/TerarangerOneConfig.h"
 
-#define BUFFER_SIZE_DUO 7  
+#define BUFFER_SIZE 4
 
-namespace terarangerduo
+namespace teraranger
 {
 
-static const char PRECISE_MODE = 'P';
-static const char FAST_MODE = 'F';
-static const char OUTDOOR_MODE = 'O';
+static const char PRECISE_MODE[1] = {'P'};
+static const char FAST_MODE[1] = {'F'};
+static const char OUTDOOR_MODE[1] = {'O'};
 
-static const char BINARY_MODE = 'B';
-static const char TEXT_MODE = 'T';
+static const char BINARY_MODE[1] = {'B'};
+static const char TEXT_MODE[1] = {'T'};
 
 static const uint8_t crc_table[] = {0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15, 0x38, 0x3f, 0x36, 0x31, 0x24, 0x23,
                                     0x2a, 0x2d, 0x70, 0x77, 0x7e, 0x79, 0x6c, 0x6b, 0x62, 0x65, 0x48, 0x4f, 0x46, 0x41,
@@ -80,36 +79,32 @@ static const uint8_t crc_table[] = {0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x
                                     0x84, 0x83, 0xde, 0xd9, 0xd0, 0xd7, 0xc2, 0xc5, 0xcc, 0xcb, 0xe6, 0xe1, 0xe8, 0xef,
                                     0xfa, 0xfd, 0xf4, 0xf3};
 
-class TerarangerDuo
+class TerarangerOne
 {
 public:
-  TerarangerDuo();
-  virtual ~TerarangerDuo();
+  TerarangerOne();
+  virtual ~TerarangerOne();
 
   uint8_t crc8(uint8_t *p, uint8_t len);
-  void serialDataCallbackDuo(uint8_t data);
+  void serialDataCallback(uint8_t data);
 
-  void dynParamCallback(const terarangerduo::TerarangerDuoConfig &config, uint32_t level);
+  void dynParamCallback(const teraranger::TerarangerOneConfig &config, uint32_t level);
 
   bool loadParameters();
-  void setMode(char c);
+  void setMode(const char *c);
 
   ros::NodeHandle nh_;
   ros::Publisher range_publisher_;
-  ros::Publisher range_publisher_i_;
 
-  dynamic_reconfigure::Server<terarangerduo::TerarangerDuoConfig> dyn_param_server_;
-  dynamic_reconfigure::Server<terarangerduo::TerarangerDuoConfig>::CallbackType dyn_param_server_callback_function_;
+  dynamic_reconfigure::Server<teraranger::TerarangerOneConfig> dyn_param_server_;
+  dynamic_reconfigure::Server<teraranger::TerarangerOneConfig>::CallbackType dyn_param_server_callback_function_;
 
   SerialPort * serial_port_;
-  boost::function<void(uint8_t)> serial_data_callback_function_duo_;
+  boost::function<void(uint8_t)> serial_data_callback_function_;
 
-  int portnum_;
   std::string portname_;
-  std::string topicname_;
-  std::string topicname_i_;
 };
 
-} // namespace terarangerduo
+} // namespace teraranger
 
-#endif  // TERARANGERDUO_TERARANGER_H_
+#endif  // TERARANGERONE_TERARANGER_H_

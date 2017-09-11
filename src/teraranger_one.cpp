@@ -36,9 +36,10 @@
 
 #include <string>
 
-#include "terarangerone/terarangerone.h"
+#include "teraranger/teraranger_one.h"
 
-namespace terarangerone
+namespace teraranger
+
 {
 
 TerarangerOne::TerarangerOne()
@@ -158,35 +159,35 @@ void TerarangerOne::serialDataCallback(uint8_t single_character)
   input_buffer[buffer_ctr++] = 'T';
 }
 
-void TerarangerOne::setMode(char c)
+void TerarangerOne::setMode(const char *c)
 {
-  serial_port_->sendChar(c);
+  serial_port_->sendChar(c, 1);
 }
 
-void TerarangerOne::dynParamCallback(const terarangerone::TerarangerOneConfig &config, uint32_t level)
+void TerarangerOne::dynParamCallback(const teraranger::TerarangerOneConfig &config, uint32_t level)
 {
-  if (config.Mode == terarangerone::TerarangerOne_Fast)
+  if (config.Mode == teraranger::TerarangerOne_Fast)
   {
     setMode(FAST_MODE);
   }
 
-  if (config.Mode == terarangerone::TerarangerOne_Precise)
+  if (config.Mode == teraranger::TerarangerOne_Precise)
   {
     setMode(PRECISE_MODE);
   }
- 
-  if (config.Mode == terarangerone::TerarangerOne_Outdoor)
+
+  if (config.Mode == teraranger::TerarangerOne_Outdoor)
   {
     setMode(OUTDOOR_MODE);
   }
 }
 
-} // namespace terarangerone
+} // namespace teraranger
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "terarangerone");
-  terarangerone::TerarangerOne tera_bee;
+  teraranger::TerarangerOne tera_bee;
   ros::spin();
 
   return 0;

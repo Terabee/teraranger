@@ -1,49 +1,13 @@
-/****************************************************************************
- *
- * Copyright (C) 2014 Flavio Fontana & Luis Rodrigues. All rights reserved.
- * Author: Flavio Fontana <fly.fontana@gmail.com>
- * Author: Luis Rodrigues <luis.rodrigues@terabee.com>
-
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
- * 3. Neither the name TerarangerOne nor the names of its contributors may be
- * used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- ****************************************************************************/
-
 #include <string>
+#include <ros/console.h>
+#include <ros/ros.h>
 
-#include "terarangerone/serial_port.h"
-#include "terarangerone/terarangerone.h"
+#include <teraranger/serial_port.h>
 
-namespace terarangerone
+namespace teraranger
 {
 
-SerialPort::SerialPort() :
-    serial_callback_function()
+SerialPort::SerialPort() : serial_callback_function()
 {
   serial_thread_should_exit_ = false;
   serial_port_fd_ = 0;
@@ -67,7 +31,7 @@ bool SerialPort::connect(const std::string port)
   }
   else
   {
-    fcntl(serial_port_fd_, F_SETFL, 0);
+    fcntl(serial_port_fd_, F_SETFL, 10);
   }
 
   struct termios newtio;
@@ -78,8 +42,8 @@ bool SerialPort::connect(const std::string port)
 
   newtio.c_cflag &= ~PARENB; // no parity bit
   newtio.c_cflag &= ~CSTOPB; // 1 stop bit
-  newtio.c_cflag &= ~CSIZE; // Only one stop bit
-  newtio.c_cflag |= CS8; // 8 bit word
+  newtio.c_cflag &= ~CSIZE;  // Only one stop bit
+  newtio.c_cflag |= CS8;     // 8 bit word
 
   newtio.c_iflag = 0; // Raw output since no parity checking is done
   newtio.c_oflag = 0; // Raw output
@@ -95,16 +59,20 @@ bool SerialPort::connect(const std::string port)
 void SerialPort::disconnect()
 {
   serial_thread_should_exit_ = true;
-  // TODO(lfr) wait for thread to finish
   close(serial_port_fd_);
 }
 
-bool SerialPort::sendChar(const char c)
+bool SerialPort::sendChar(const char c[], int len)
 {
-  return write(serial_port_fd_, (const void*)&c, 1);
+  for (int i = 0; i < len; i++)
+  {
+    ROS_DEBUG("Sending byte... %d %x", i, (unsigned int)(unsigned char)c[i]);
+  }
+
+  return write(serial_port_fd_, (const void *)c, len);
 }
 
-void SerialPort::setSerialCallbackFunction(boost::function<void(uint8_t)> * f)
+void SerialPort::setSerialCallbackFunction(boost::function<void(uint8_t)> *f)
 {
   serial_callback_function = f;
 }
@@ -112,6 +80,7 @@ void SerialPort::setSerialCallbackFunction(boost::function<void(uint8_t)> * f)
 void SerialPort::serialThread()
 {
   uint8_t single_character;
+
   // Non read
   while (!serial_thread_should_exit_ && ros::ok())
   {
@@ -124,4 +93,4 @@ void SerialPort::serialThread()
   return;
 }
 
-} // namespace terarangerone
+} // teraranger

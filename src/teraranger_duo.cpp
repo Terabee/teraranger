@@ -37,13 +37,13 @@
 
 #include <string>
 
-#include "terarangerduo/terarangerduo.h"
+#include "teraranger/teraranger_duo.h"
 
-namespace terarangerduo
+namespace teraranger
 {
 
 TerarangerDuo::TerarangerDuo()
-{    
+{
   // Get paramters
   ros::NodeHandle private_node_handle_("~");
   private_node_handle_.param("portname", portname_, std::string("/dev/ttyUSB0"));
@@ -53,7 +53,7 @@ TerarangerDuo::TerarangerDuo()
   // Publishers
   range_publisher_ = nh_.advertise<sensor_msgs::Range>(topicname_, 1);
   range_publisher_i_ = nh_.advertise<sensor_msgs::Range>(topicname_i_, 1);
-  
+
   // Create serial port
   serial_port_ = new SerialPort();
 
@@ -102,7 +102,7 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
   static uint8_t input_buffer[BUFFER_SIZE_DUO];
   static int buffer_ctr = 0;
   static int seq_ctr = 0;
-    
+
   sensor_msgs::Range range_trone_msg;
   range_trone_msg.field_of_view = 0.0593;
   range_trone_msg.max_range = 14.0;
@@ -111,10 +111,10 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
 
   sensor_msgs::Range range_sonar_msg;
   range_sonar_msg.field_of_view = 0.0872;
-  range_sonar_msg.max_range = 7.65;    
+  range_sonar_msg.max_range = 7.65;
   range_sonar_msg.min_range = 0.05;
   range_sonar_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
- 
+
   if (single_character != 'T' && buffer_ctr < 7)
   {
     // not begin of serial feed so add char to buffer
@@ -124,12 +124,12 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
   else if (single_character == 'T')
   {
     if (buffer_ctr == 4)
-    { 
+    {
       // end of feed, calculate
       int16_t crc = crc8(input_buffer, 3);
- 
+
       if (crc == input_buffer[3])
-      { 
+      {
         // trduo_ = false;
         if (seq_ctr==1)
         {
@@ -148,7 +148,7 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
           range_trone_msg.header.stamp = ros::Time::now();
           range_trone_msg.header.seq = seq_ctr++;
           range_trone_msg.range = range * 0.001; // convert to m
-          range_publisher_.publish(range_trone_msg);        
+          range_publisher_.publish(range_trone_msg);
         }
         ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_trone_msg.range);
       }
@@ -159,7 +159,7 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
       int16_t crc = crc8(input_buffer, 6);
 
       if (crc == input_buffer[6])
-      {        
+      {
         // trduo_ = true;
         if (seq_ctr==1)
         {
@@ -182,7 +182,7 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
           range_trone_msg.header.seq = seq_ctr++;
           range_trone_msg.header.frame_id = "base_link";
           range_trone_msg.range = range_trone * 0.001; // convert to m
-          range_publisher_.publish(range_trone_msg);                                  
+          range_publisher_.publish(range_trone_msg);
         }
         ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_trone_msg.range);
 
@@ -192,7 +192,7 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
           range_sonar_msg.header.seq = seq_ctr;
           range_sonar_msg.header.frame_id = "base_link";
           range_sonar_msg.range = range_sonar * 0.001 ; // convert to m
-          range_publisher_i_.publish(range_sonar_msg);                                  
+          range_publisher_i_.publish(range_sonar_msg);
         }
         ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_sonar_msg.range);
       }
@@ -204,16 +204,16 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
     else
     {
       ROS_DEBUG("[%s] received T but did not expect it, reset buffer without evaluating data",
-               ros::this_node::getName().c_str());   
+               ros::this_node::getName().c_str());
     }
   }
   else
   {
     ROS_DEBUG("[%s] buffer_overflowed without receiving T, reset input_buffer", ros::this_node::getName().c_str());
-  }  
+  }
   // reset
   buffer_ctr = 0;
-  
+
   // clear struct
   bzero(&input_buffer, BUFFER_SIZE_DUO);
 
@@ -221,41 +221,38 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
   input_buffer[buffer_ctr++] = 'T';
 }
 
-void TerarangerDuo::setMode(char c)
+void TerarangerDuo::setMode(const char *c)
 {
-  serial_port_->sendChar(c);
+  serial_port_->sendChar(c, 1);
 }
 
-void TerarangerDuo::dynParamCallback(const terarangerduo::TerarangerDuoConfig &config, uint32_t level)
+void TerarangerDuo::dynParamCallback(const teraranger::TerarangerDuoConfig &config, uint32_t level)
 {
-  if (config.Mode == terarangerduo::TerarangerDuo_Fast)
+  if (config.Mode == teraranger::TerarangerDuo_Fast)
   {
     setMode(FAST_MODE);
   }
 
-  if (config.Mode == terarangerduo::TerarangerDuo_Precise)
+  if (config.Mode == teraranger::TerarangerDuo_Precise)
   {
     setMode(PRECISE_MODE);
   }
 
-  if (config.Mode == terarangerduo::TerarangerDuo_Outdoor)
+  if (config.Mode == teraranger::TerarangerDuo_Outdoor)
   {
     setMode(OUTDOOR_MODE);
   }
 
 }
 
-} // namespace terarangerduo
+} // namespace teraranger
 
 int main(int argc, char **argv)
 {
 
   ros::init(argc, argv, "terarangerduo");
-  terarangerduo::TerarangerDuo tera_bee;
+  teraranger::TerarangerDuo tera_bee;
   ros::spin();
- 
+
   return 0;
 }
-
-
-
