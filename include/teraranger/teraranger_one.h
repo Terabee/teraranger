@@ -44,6 +44,11 @@
 #include <serial/serial.h>
 #include <teraranger/TerarangerOneConfig.h>
 #include <teraranger/helper_lib.h>
+#include <limits>
+
+#define OUT_OF_RANGE_VALUE 0
+#define TOO_CLOSE_VALUE 200
+#define VALUE_TO_METER_FACTOR 0.001
 
 #define BUFFER_SIZE 4
 #define SERIAL_SPEED 115200

@@ -113,13 +113,36 @@ void TerarangerOne::serialDataCallback(uint8_t single_character)
         int16_t range = input_buffer[1] << 8;
         range |= input_buffer[2];
 
-        if (range < 14000 && range > 200)
+        float final_range;
+        float float_range = range * VALUE_TO_METER_FACTOR;
+
+        if(range == TOO_CLOSE_VALUE)// Too close, 255 is for short range
         {
-          range_msg.header.stamp = ros::Time::now();
-          range_msg.header.seq = seq_ctr++;
-          range_msg.range = range * 0.001; // convert to m
-          range_publisher_.publish(range_msg);
+          final_range = -std::numeric_limits<float>::infinity();
         }
+        else if(range == OUT_OF_RANGE_VALUE)// Out of range
+        {
+          final_range = std::numeric_limits<float>::infinity();
+        }
+        // Enforcing min and max range
+        else if(float_range > range_msg.max_range)
+        {
+          final_range = std::numeric_limits<float>::infinity();
+        }
+        else if(float_range < range_msg.min_range)
+        {
+          final_range = -std::numeric_limits<float>::infinity();
+        }
+        else
+        {
+          final_range = float_range;
+        }
+
+        range_msg.header.stamp = ros::Time::now();
+        range_msg.header.seq = seq_ctr++;
+        range_msg.range = final_range;
+        range_publisher_.publish(range_msg);
+
         ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_msg.range);
       }
       else
