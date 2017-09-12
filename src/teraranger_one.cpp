@@ -60,79 +60,67 @@ void TerarangerOne::serialDataCallback(uint8_t single_character)
   range_msg.header.frame_id = "base_range";
   range_msg.radiation_type = sensor_msgs::Range::INFRARED;
 
-  if (single_character != 'T' && buffer_ctr < 4)
+  if (single_character == 'T' && buffer_ctr == 0)
   {
-    // not begin of serial feed so add char to buffer
-    input_buffer[buffer_ctr++] = single_character;
+    input_buffer[buffer_ctr] = single_character;
+    buffer_ctr++;
     return;
   }
-  else if (single_character == 'T')
+  else if (buffer_ctr >= 1 && buffer_ctr < BUFFER_SIZE-1)
   {
-    if (buffer_ctr == 4)
+    input_buffer[buffer_ctr] = single_character;
+    buffer_ctr++;
+    return;
+  }
+  if (buffer_ctr == BUFFER_SIZE-1)
+  {
+    input_buffer[buffer_ctr] = single_character;
+    uint8_t crc = HelperLib::crc8(input_buffer, BUFFER_SIZE-1);
+    if(crc == input_buffer[BUFFER_SIZE-1])
     {
-      // end of feed, calculate
-      int16_t crc = HelperLib::crc8(input_buffer, 3);
+      int16_t range = input_buffer[1] << 8;
+      range |= input_buffer[2];
 
-      if (crc == input_buffer[3])
+      float final_range;
+      float float_range = range * VALUE_TO_METER_FACTOR;
+
+      if(range == TOO_CLOSE_VALUE)// Too close, 255 is for short range
       {
-        int16_t range = input_buffer[1] << 8;
-        range |= input_buffer[2];
-
-        float final_range;
-        float float_range = range * VALUE_TO_METER_FACTOR;
-
-        if(range == TOO_CLOSE_VALUE)// Too close, 255 is for short range
-        {
-          final_range = -std::numeric_limits<float>::infinity();
-        }
-        else if(range == OUT_OF_RANGE_VALUE)// Out of range
-        {
-          final_range = std::numeric_limits<float>::infinity();
-        }
-        // Enforcing min and max range
-        else if(float_range > range_msg.max_range)
-        {
-          final_range = std::numeric_limits<float>::infinity();
-        }
-        else if(float_range < range_msg.min_range)
-        {
-          final_range = -std::numeric_limits<float>::infinity();
-        }
-        else
-        {
-          final_range = float_range;
-        }
-
-        range_msg.header.stamp = ros::Time::now();
-        range_msg.header.seq = seq_ctr++;
-        range_msg.range = final_range;
-        range_publisher_.publish(range_msg);
-
-        ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_msg.range);
+        final_range = -std::numeric_limits<float>::infinity();
+      }
+      else if(range == OUT_OF_RANGE_VALUE)// Out of range
+      {
+        final_range = std::numeric_limits<float>::infinity();
+      }
+      // Enforcing min and max range
+      else if(float_range > range_msg.max_range)
+      {
+        final_range = std::numeric_limits<float>::infinity();
+      }
+      else if(float_range < range_msg.min_range)
+      {
+        final_range = -std::numeric_limits<float>::infinity();
       }
       else
       {
-        ROS_DEBUG("[%s] crc missmatch", ros::this_node::getName().c_str());
+        final_range = float_range;
       }
+      range_msg.header.stamp = ros::Time::now();
+      range_msg.header.seq = seq_ctr++;
+      range_msg.range = final_range;
+      range_publisher_.publish(range_msg);
+
+      ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_msg.range);
     }
     else
     {
-      ROS_DEBUG("[%s] reveived T but did not expect it, reset buffer without evaluating data",
-               ros::this_node::getName().c_str());
+      ROS_DEBUG("[%s] crc missmatch", ros::this_node::getName().c_str());
     }
-  }
-  else
-  {
-    ROS_DEBUG("[%s] buffer_overflowed without receiving T, reset input_buffer", ros::this_node::getName().c_str());
   }
   // reset
   buffer_ctr = 0;
-
   // clear struct
   bzero(&input_buffer, BUFFER_SIZE);
-
-  // store T
-  input_buffer[buffer_ctr++] = 'T';
 }
 
 void TerarangerOne::setMode(const char *c)
