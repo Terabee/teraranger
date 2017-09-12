@@ -45,6 +45,12 @@
 #include <serial/serial.h>
 #include <teraranger/TerarangerDuoConfig.h>
 #include <teraranger/helper_lib.h>
+#include <limits>
+
+#define ULTRASOUND_OUT_OF_RANGE 7650
+#define INFRARED_OUT_OF_RANGE 0
+#define TOO_CLOSE_VALUE 200
+#define VALUE_TO_METER_FACTOR 0.001
 
 #define BUFFER_SIZE_DUO 7
 
@@ -86,6 +92,11 @@ public:
   boost::function<void(uint8_t)> serial_data_callback_function_duo_;
 
   void spin();
+
+  sensor_msgs::Range range_trone_msg;
+  sensor_msgs::Range range_sonar_msg;
+  float process_infrared_range(int16_t range);
+  float process_ultrasound_range(int16_t range);
 
   int portnum_;
   std::string portname_;
