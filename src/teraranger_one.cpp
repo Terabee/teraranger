@@ -10,7 +10,7 @@ TerarangerOne::TerarangerOne()
   private_node_handle_.param("portname", portname_, std::string("/dev/ttyUSB0"));
 
   // Publishers
-  range_publisher_ = nh_.advertise<sensor_msgs::Range>("terarangerone", 1);
+  range_publisher_ = nh_.advertise<sensor_msgs::Range>("teraranger_one", 1);
 
   // Serial Port init
   serial_port_.setPort(portname_);
