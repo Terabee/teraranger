@@ -4,6 +4,12 @@
 #include <serial/serial.h>
 #include <ros/ros.h>
 #include <teraranger/helper_lib.h>
+#include <limits>
+
+#define OUT_OF_RANGE_VALUE -1
+#define TOO_CLOSE_VALUE 0
+#define INVALID_MEASURE 1
+#define VALUE_TO_METER_FACTOR 0.001
 
 #define SERIAL_SPEED 115200
 #define SERIAL_TIMEOUT_MS 1000
@@ -42,6 +48,6 @@ class TerarangerEvo
     const float max_range = 60.0f;
     const float min_range = 0.0f;
     const std::string frame_id = "base_range_";
-    sensor_msgs::Range range;
+    sensor_msgs::Range range_msg;
 };
 }

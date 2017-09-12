@@ -46,11 +46,10 @@ TerarangerEvo::TerarangerEvo()
   setMode(BINARY_MODE, 4);
 
   // Initialize range message
-  range.field_of_view = field_of_view;
-  range.max_range = max_range;
-  range.min_range = min_range;
-  range.radiation_type = sensor_msgs::Range::INFRARED;
-  range.range = -1.0;
+  range_msg.field_of_view = field_of_view;
+  range_msg.max_range = max_range;
+  range_msg.min_range = min_range;
+  range_msg.radiation_type = sensor_msgs::Range::INFRARED;
 }
 TerarangerEvo::~TerarangerEvo() {}
 
@@ -67,6 +66,7 @@ void TerarangerEvo::serialDataCallback(uint8_t single_character)
 {
   static uint8_t input_buffer[BUFFER_SIZE];
   static int buffer_ctr = 0;
+  static int seq_ctr = 0;
 
   if (single_character =='T' && buffer_ctr == 0)
   {
@@ -86,22 +86,43 @@ void TerarangerEvo::serialDataCallback(uint8_t single_character)
     uint8_t crc = HelperLib::crc8(input_buffer, BUFFER_SIZE-1);
     if(crc == input_buffer[BUFFER_SIZE-1])
     {
-      uint8_t c1 = input_buffer[1];
-      uint8_t c2 = input_buffer[2];
-      float f_range = HelperLib::two_chars_to_float(c1, c2)*0.001;
+      int16_t range = input_buffer[1] << 8;
+      range |= input_buffer[2];
 
-      if (f_range < min_range)
+      float final_range;
+      float float_range = range * VALUE_TO_METER_FACTOR;
+
+      if(range == TOO_CLOSE_VALUE)// Too close, 255 is for short range
       {
-        f_range = -std::numeric_limits<float>::infinity();
+        final_range = -std::numeric_limits<float>::infinity();
       }
-      else if(f_range > max_range)
+      else if(range == OUT_OF_RANGE_VALUE)// Out of range
       {
-        f_range = std::numeric_limits<float>::infinity();
+        final_range = std::numeric_limits<float>::infinity();
+      }
+      else if(range == INVALID_MEASURE)// Cannot measure
+      {
+        final_range = std::numeric_limits<float>::quiet_NaN();
+      }
+      // Enforcing min and max range
+      else if(float_range > range_msg.max_range)
+      {
+        final_range = std::numeric_limits<float>::infinity();
+      }
+      else if(float_range < range_msg.min_range)
+      {
+        final_range = -std::numeric_limits<float>::infinity();
+      }
+      else
+      {
+        final_range = float_range;
       }
 
-      range.range = f_range;
-      range.header.stamp = ros::Time::now();
-      range_publisher_.publish(range);
+      range_msg.header.stamp = ros::Time::now();
+      range_msg.header.seq = seq_ctr++;
+      range_msg.range = final_range;
+      range_msg.header.stamp = ros::Time::now();
+      range_publisher_.publish(range_msg);
 
     }
   }
