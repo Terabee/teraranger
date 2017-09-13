@@ -1,39 +1,3 @@
-/****************************************************************************
- *
- * Copyright (C) 2014 Flavio Fontana & Luis Rodrigues. All rights reserved.
- * Author: Flavio Fontana <fly.fontana@gmail.com>
- * Author: Luis Rodrigues <luis.rodrigues@terabee.com>
- * Author: Ehsan Asadi    <ehsan.asadi@gmail.com>
-
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
- * 3. Neither the name TerarangerDuo nor the names of its contributors may be
- * used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- ****************************************************************************/
 #include <teraranger/teraranger_duo.h>
 
 namespace teraranger
@@ -80,10 +44,80 @@ TerarangerDuo::TerarangerDuo()
   // Dynamic reconfigure
   dyn_param_server_callback_function_ = boost::bind(&TerarangerDuo::dynParamCallback, this, _1, _2);
   dyn_param_server_.setCallback(dyn_param_server_callback_function_);
+
+  range_trone_msg.field_of_view = 0.0593;
+  range_trone_msg.max_range = 14.0;
+  range_trone_msg.min_range = 0.2;
+  range_trone_msg.header.frame_id = "base_link";
+  range_trone_msg.radiation_type = sensor_msgs::Range::INFRARED;
+
+  range_sonar_msg.field_of_view = 0.0872;
+  range_sonar_msg.max_range = 7.65;
+  range_sonar_msg.min_range = 0.05;
+  range_sonar_msg.header.frame_id = "base_link";
+  range_sonar_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
 }
 
 TerarangerDuo::~TerarangerDuo()
 {
+}
+
+float TerarangerDuo::process_infrared_range(int16_t range)
+{
+  float final_range;
+  float float_range = range * VALUE_TO_METER_FACTOR;
+
+  if(range == TOO_CLOSE_VALUE)// Too close
+  {
+    final_range = -std::numeric_limits<float>::infinity();
+  }
+  else if(range == INFRARED_OUT_OF_RANGE)// Out of range
+  {
+    final_range = std::numeric_limits<float>::infinity();
+  }
+  // Enforcing min and max range
+  else if(float_range > range_trone_msg.max_range)
+  {
+    final_range = std::numeric_limits<float>::infinity();
+  }
+  else if(float_range < range_trone_msg.min_range)
+  {
+    final_range = -std::numeric_limits<float>::infinity();
+  }
+  else
+  {
+    final_range = float_range;
+  }
+  return final_range;
+}
+
+float TerarangerDuo::process_ultrasound_range(int16_t range)
+{
+  float final_range;
+  float float_range = range * VALUE_TO_METER_FACTOR;
+
+  if(range == TOO_CLOSE_VALUE)// Too close
+  {
+    final_range = -std::numeric_limits<float>::infinity();
+  }
+  else if(range == ULTRASOUND_OUT_OF_RANGE)// Out of range
+  {
+    final_range = std::numeric_limits<float>::infinity();
+  }
+  // Enforcing min and max range
+  else if(float_range > range_sonar_msg.max_range)
+  {
+    final_range = std::numeric_limits<float>::infinity();
+  }
+  else if(float_range < range_sonar_msg.min_range)
+  {
+    final_range = -std::numeric_limits<float>::infinity();
+  }
+  else
+  {
+    final_range = float_range;
+  }
+  return final_range;
 }
 
 void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
@@ -91,18 +125,6 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
   static uint8_t input_buffer[BUFFER_SIZE_DUO];
   static int buffer_ctr = 0;
   static int seq_ctr = 0;
-
-  sensor_msgs::Range range_trone_msg;
-  range_trone_msg.field_of_view = 0.0593;
-  range_trone_msg.max_range = 14.0;
-  range_trone_msg.min_range = 0.2;
-  range_trone_msg.radiation_type = sensor_msgs::Range::INFRARED;
-
-  sensor_msgs::Range range_sonar_msg;
-  range_sonar_msg.field_of_view = 0.0872;
-  range_sonar_msg.max_range = 7.65;
-  range_sonar_msg.min_range = 0.05;
-  range_sonar_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
 
   if (single_character != 'T' && buffer_ctr < 7)
   {
@@ -132,13 +154,10 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
         int16_t range = input_buffer[1] << 8;
         range |= input_buffer[2];
 
-        if (range <= 14000 && range >= 200)
-        {
-          range_trone_msg.header.stamp = ros::Time::now();
-          range_trone_msg.header.seq = seq_ctr++;
-          range_trone_msg.range = range * 0.001; // convert to m
-          range_publisher_.publish(range_trone_msg);
-        }
+        range_trone_msg.header.stamp = ros::Time::now();
+        range_trone_msg.header.seq = seq_ctr++;
+        range_trone_msg.range = process_infrared_range(range); // convert to m
+        range_publisher_.publish(range_trone_msg);
         ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_trone_msg.range);
       }
     }
@@ -165,24 +184,18 @@ void TerarangerDuo::serialDataCallbackDuo(uint8_t single_character)
         uint16_t range_sonar = input_buffer[4] << 8;
         range_sonar |= input_buffer[5];
 
-        if (range_trone <= 14000 && range_trone >= 200)
-        {
-          range_trone_msg.header.stamp = ros::Time::now();
-          range_trone_msg.header.seq = seq_ctr++;
-          range_trone_msg.header.frame_id = "base_link";
-          range_trone_msg.range = range_trone * 0.001; // convert to m
-          range_publisher_.publish(range_trone_msg);
-        }
+        // Process infrared
+        range_trone_msg.header.stamp = ros::Time::now();
+        range_trone_msg.header.seq = seq_ctr++;
+        range_trone_msg.range = process_infrared_range(range_trone); // convert to m
+        range_publisher_.publish(range_trone_msg);
         ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_trone_msg.range);
 
-        if (range_sonar <= 7650 && range_sonar >= 50)
-        {
-          range_sonar_msg.header.stamp = ros::Time::now();
-          range_sonar_msg.header.seq = seq_ctr;
-          range_sonar_msg.header.frame_id = "base_link";
-          range_sonar_msg.range = range_sonar * 0.001 ; // convert to m
-          range_publisher_i_.publish(range_sonar_msg);
-        }
+        // Process ultrasound
+        range_sonar_msg.header.stamp = ros::Time::now();
+        range_sonar_msg.header.seq = seq_ctr;
+        range_sonar_msg.range = process_ultrasound_range(range_sonar); // convert to m
+        range_publisher_i_.publish(range_sonar_msg);
         ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_sonar_msg.range);
       }
       else

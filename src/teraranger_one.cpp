@@ -1,38 +1,3 @@
-/****************************************************************************
- *
- * Copyright (C) 2014 Flavio Fontana & Luis Rodrigues. All rights reserved.
- * Author: Flavio Fontana <fly.fontana@gmail.com>
- * Author: Luis Rodrigues <luis.rodrigues@terabee.com>
-
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
- * 3. Neither the name TerarangerOne nor the names of its contributors may be
- * used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
- * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- ****************************************************************************/
 #include <teraranger/teraranger_one.h>
 
 namespace teraranger
@@ -113,13 +78,36 @@ void TerarangerOne::serialDataCallback(uint8_t single_character)
         int16_t range = input_buffer[1] << 8;
         range |= input_buffer[2];
 
-        if (range < 14000 && range > 200)
+        float final_range;
+        float float_range = range * VALUE_TO_METER_FACTOR;
+
+        if(range == TOO_CLOSE_VALUE)// Too close, 255 is for short range
         {
-          range_msg.header.stamp = ros::Time::now();
-          range_msg.header.seq = seq_ctr++;
-          range_msg.range = range * 0.001; // convert to m
-          range_publisher_.publish(range_msg);
+          final_range = -std::numeric_limits<float>::infinity();
         }
+        else if(range == OUT_OF_RANGE_VALUE)// Out of range
+        {
+          final_range = std::numeric_limits<float>::infinity();
+        }
+        // Enforcing min and max range
+        else if(float_range > range_msg.max_range)
+        {
+          final_range = std::numeric_limits<float>::infinity();
+        }
+        else if(float_range < range_msg.min_range)
+        {
+          final_range = -std::numeric_limits<float>::infinity();
+        }
+        else
+        {
+          final_range = float_range;
+        }
+
+        range_msg.header.stamp = ros::Time::now();
+        range_msg.header.seq = seq_ctr++;
+        range_msg.range = final_range;
+        range_publisher_.publish(range_msg);
+
         ROS_DEBUG("[%s] all good %.3f m", ros::this_node::getName().c_str(), range_msg.range);
       }
       else
