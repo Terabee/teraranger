@@ -68,7 +68,7 @@ void TerarangerEvo::serialDataCallback(uint8_t single_character)
   static int buffer_ctr = 0;
   static int seq_ctr = 0;
 
-  if (single_character =='T' && buffer_ctr == 0)
+  if (single_character == 'T' && buffer_ctr == 0)
   {
     input_buffer[buffer_ctr] = single_character;
     buffer_ctr++;
@@ -123,7 +123,10 @@ void TerarangerEvo::serialDataCallback(uint8_t single_character)
       range_msg.range = final_range;
       range_msg.header.stamp = ros::Time::now();
       range_publisher_.publish(range_msg);
-
+    }
+    else
+    {
+      ROS_DEBUG("[%s] crc missmatch", ros::this_node::getName().c_str());
     }
   }
   buffer_ctr = 0;
