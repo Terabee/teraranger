@@ -2,8 +2,8 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2017-09-15)
+------------------
 * Create README.md
 * Handle infinite values
 * Add One and Duo support
