@@ -2,6 +2,11 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update package.xml
+* Contributors: Kabaradjian PL
+
 1.0.0 (2017-09-15)
 ------------------
 * Create README.md
