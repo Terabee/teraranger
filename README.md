@@ -1,8 +1,10 @@
-# ROS package for TeraRanger module
+# ROS package for TeraRanger modules
 
- This package is a collection of nodes for Teraranger module single sensor solutions:
- * [Teraranger One](http://teraranger.com/portfolio-item/teraranger-one/)
- * [Teraranger Duo](http://teraranger.com/portfolio-item/teraranger-duo/)
+ This package is a collection of nodes for TeraRanger single point sensor modules.
+
+ * [TeraRanger Evo](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/)
+ * [TeraRanger One](https://www.terabee.com/portfolio-item/teraranger-one/)
+ * [TeraRanger Duo](https://www.terabee.com/portfolio-item/teraranger-duo/)
 
 ## Building and Running the package from source
 
@@ -28,14 +30,21 @@ catkin_make
 source devel/setup.bash
 ```
 
-## Running the Teraranger One
+## Running the TeraRanger Evo
+
+After your workspace is built and sourced:
+```
+rosrun teraranger evo _portname:=/dev/ttyACM0
+```
+
+## Running the TeraRanger One
 
 After your workspace is built and sourced:
 ```
 rosrun teraranger one _portname:=/dev/ttyACM0
 ```
 
-## Running the Teraranger Duo
+## Running the TeraRanger Duo
 
 After your workspace is built and sourced:
 ```
@@ -52,22 +61,33 @@ rosrun rqt_reconfigure rqt_reconfigure
 
 ## Product pictures and where to get the sensors
 
-### Teraranger One
+### TeraRanger Evo
+
+<img src="http://www.teraranger.com/wp-content/uploads/2017/04/DSC0977-Editar.jpg" width="300"/>
+
+| Information |
+| -------------- |
+|[Product page](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/)|
+|[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/#specifications)|
+|[Online shop](http://www.teraranger.com/product/teraranger-evo/) |
+
+### TeraRanger One
 
 <img src="http://www.teraranger.com/wp-content/uploads/2016/04/TeraRanger-Frame-Side-View.jpg" width="300"/>
 
 | Information |
 | -------------- |
-|[Product page](http://teraranger.com/portfolio-item/teraranger-one/)|
-|[Specification sheet](http://teraranger.com/portfolio-item/teraranger-one/#teraranger-specifications)|
+|[Product page](https://www.terabee.com/portfolio-item/teraranger-one/)|
+|[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-one/#teraranger-specifications)|
 |[Online shop](http://www.teraranger.com/product-category/sensors/) |
 
-### Teraranger Duo
+### TeraRanger Duo
 
 <img src="http://www.teraranger.com/wp-content/uploads/2014/06/TRduo.jpg" width="300"/>
 
 | Information |
 | -------------- |
-|[Product page](http://teraranger.com/portfolio-item/teraranger-duo/)|
-|[Specification sheet](http://teraranger.com/portfolio-item/teraranger-duo/#teraranger-specifications)|
+|[Product page](https://www.terabee.com/portfolio-item/teraranger-duo/)|
+|[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-duo/#teraranger-specifications)|
 |[Online shop](http://www.teraranger.com/product-category/sensors/) |
+
