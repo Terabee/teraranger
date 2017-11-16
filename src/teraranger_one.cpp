@@ -5,9 +5,10 @@ namespace teraranger
 
 TerarangerOne::TerarangerOne()
 {
-  // Get paramters
+  // Get parameters
   ros::NodeHandle private_node_handle_("~");
   private_node_handle_.param("portname", portname_, std::string("/dev/ttyUSB0"));
+  private_node_handle_.param("frame_id", frame_id_, std::string("base_range"));
 
   // Publishers
   range_publisher_ = nh_.advertise<sensor_msgs::Range>("teraranger_one", 1);
@@ -57,7 +58,7 @@ void TerarangerOne::serialDataCallback(uint8_t single_character)
   range_msg.field_of_view = 0.0593;
   range_msg.max_range = 14.0;
   range_msg.min_range = 0.2;
-  range_msg.header.frame_id = "base_range";
+  range_msg.header.frame_id = frame_id_;
   range_msg.radiation_type = sensor_msgs::Range::INFRARED;
 
   if (single_character == 'T' && buffer_ctr == 0)

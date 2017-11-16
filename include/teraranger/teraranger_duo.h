@@ -65,6 +65,8 @@ public:
   std::string portname_;
   std::string topicname_;
   std::string topicname_i_;
+  std::string frame_id_ir_;
+  std::string frame_id_us_;
 };
 
 } // namespace teraranger

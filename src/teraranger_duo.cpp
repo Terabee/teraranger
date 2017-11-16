@@ -5,11 +5,13 @@ namespace teraranger
 
 TerarangerDuo::TerarangerDuo()
 {
-  // Get paramters
+  // Get parameters
   ros::NodeHandle private_node_handle_("~");
   private_node_handle_.param("portname", portname_, std::string("/dev/ttyUSB0"));
   private_node_handle_.param("topicname", topicname_, std::string("teraranger_duo/infrared"));
   private_node_handle_.param("topicnamei", topicname_i_, std::string("teraranger_duo/ultrasound"));
+  private_node_handle_.param("frame_id_ir", frame_id_ir_, std::string("base_range_ir"));
+  private_node_handle_.param("frame_id_us", frame_id_us_, std::string("base_range_us"));
 
   // Publishers
   range_publisher_ = nh_.advertise<sensor_msgs::Range>(topicname_, 1);
@@ -48,13 +50,13 @@ TerarangerDuo::TerarangerDuo()
   range_trone_msg.field_of_view = 0.0593;
   range_trone_msg.max_range = 14.0;
   range_trone_msg.min_range = 0.2;
-  range_trone_msg.header.frame_id = "base_link";
+  range_trone_msg.header.frame_id = frame_id_ir_;
   range_trone_msg.radiation_type = sensor_msgs::Range::INFRARED;
 
   range_sonar_msg.field_of_view = 0.0872;
   range_sonar_msg.max_range = 7.65;
   range_sonar_msg.min_range = 0.05;
-  range_sonar_msg.header.frame_id = "base_link";
+  range_sonar_msg.header.frame_id = frame_id_us_;
   range_sonar_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
 }
 

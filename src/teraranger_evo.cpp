@@ -12,6 +12,7 @@ TerarangerEvo::TerarangerEvo()
   ns_ = ros::this_node::getNamespace();
   ns_ = ros::names::clean(ns_);
   ROS_INFO("node namespace: [%s]", ns_.c_str());
+  private_node_handle_.param("frame_id", frame_id_, std::string("base_range"));
 
   //Publishers
   range_publisher_ = nh_.advertise<sensor_msgs::Range>("teraranger_evo", 2);
@@ -49,6 +50,7 @@ TerarangerEvo::TerarangerEvo()
   range_msg.field_of_view = field_of_view;
   range_msg.max_range = max_range;
   range_msg.min_range = min_range;
+  range_msg.header.frame_id = frame_id_;
   range_msg.radiation_type = sensor_msgs::Range::INFRARED;
 }
 TerarangerEvo::~TerarangerEvo() {}
