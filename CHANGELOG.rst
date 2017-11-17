@@ -2,8 +2,8 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.0 (2017-11-17)
+------------------
 * Change license to MIT
 * Put frame_id as a parameter in one, duo, and evo driver
 * Update README with correct evo links
