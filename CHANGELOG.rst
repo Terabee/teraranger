@@ -2,10 +2,17 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Change license to MIT
+* Put frame_id as a parameter in one, duo, and evo driver
+* Update README with correct evo links
+* Contributors: Pierre-Louis Kabaradjian, Baptiste Potier
+
 1.0.1 (2017-09-20)
 ------------------
 * Update package.xml
-* Contributors: Kabaradjian PL
+* Contributors: Pierre-Louis Kabaradjian
 
 1.0.0 (2017-09-15)
 ------------------
@@ -22,4 +29,4 @@ Changelog for package teraranger
 * Update drivers to ros-serial
 * Enable outdoor mode in reconfigure for one and duo
 * Initialize repository
-* Contributors: BaptistePotier, Mateusz Sadowski, pl-kabaradjian
+* Contributors: Pierre-Louis Kabaradjian, BaptistePotier, Mateusz Sadowski
