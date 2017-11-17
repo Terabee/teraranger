@@ -14,7 +14,7 @@
   <author email="pierre-louis.kabaradjian@terabee.com">Kabaradjian Pierre-Louis</author>
   <author email="baptiste.potier@terabee.com">Baptiste Potier</author>
 
-  <license>GPLv3</license>
+  <license>MIT</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
