@@ -41,13 +41,17 @@ class TerarangerEvo
     std::string portname_;
     std::string frame_id_;
     std::string ns_;
+    std::string sensor_type_;
+
 
     void spin();
 
   private:
     const float field_of_view = 0.0349066f;
-    const float max_range = 60.0f;
-    const float min_range = 0.0f;
+    const float max_range_evo_60m = 60.0f;
+    const float min_range_evo_60m = 0.0f;
+    const float max_range_evo_600hz = 8.0f;
+    const float min_range_evo_600hz = 0.75f;
     const std::string frame_id = "base_range_";
     sensor_msgs::Range range_msg;
 };

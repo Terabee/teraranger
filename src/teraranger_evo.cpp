@@ -48,8 +48,34 @@ TerarangerEvo::TerarangerEvo()
 
   // Initialize range message
   range_msg.field_of_view = field_of_view;
-  range_msg.max_range = max_range;
-  range_msg.min_range = min_range;
+
+//  private_node_handle_.deleteParam("sensor_type");
+  private_node_handle_.getParam("sensor_type", sensor_type_);
+  ROS_INFO("[%s] sensor type: %s", ros::this_node::getName().c_str(), sensor_type_.c_str());
+
+  if (sensor_type_ == "evo_60m")
+  {
+    range_msg.max_range = max_range_evo_60m;
+    range_msg.min_range = min_range_evo_60m;
+    ROS_INFO ("%f",range_msg.max_range);
+  }
+
+  else if (sensor_type_ == "evo_600hz")
+  {
+    range_msg.max_range = max_range_evo_600hz;
+    range_msg.min_range = min_range_evo_600hz;
+    ROS_INFO ("%f",range_msg.max_range);
+  }
+
+  else if (!private_node_handle_.hasParam("sensor_type"))
+    {
+     ROS_INFO("NO EVO TYPE SET, DEFAULT EVO 60m");
+     private_node_handle_.param("sensor_type", sensor_type_, std::string("evo_60m"));
+     range_msg.max_range = max_range_evo_60m;
+     range_msg.min_range = min_range_evo_60m;
+     ROS_INFO ("%f",range_msg.max_range);
+    }
+
   range_msg.header.frame_id = frame_id_;
   range_msg.radiation_type = sensor_msgs::Range::INFRARED;
 }
