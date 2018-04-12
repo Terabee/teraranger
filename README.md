@@ -79,7 +79,7 @@ rosrun rqt_reconfigure rqt_reconfigure
 | -------------- |
 |[Product page Evo 60m](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/) / [Product page Evo 600Hz](https://www.terabee.com/portfolio-item/teraranger-evo-600hz/)|
 |[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/#specifications)|
-|[Online shop Evo 600Hz](http://www.teraranger.com/product/teraranger-evo/)|
+|[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
 
 ### TeraRanger One
 

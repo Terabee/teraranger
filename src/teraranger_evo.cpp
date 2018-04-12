@@ -67,7 +67,7 @@ TerarangerEvo::TerarangerEvo()
 
   else if (!private_node_handle_.hasParam("sensor_type"))
    {
-     ROS_INFO("No evo type set, Evo 60m by default");
+     ROS_INFO("No Evo type set, Evo 60m by default");
      private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
      range_msg.max_range = EVO_60M_MAX;
      range_msg.min_range = EVO_60M_MIN;
