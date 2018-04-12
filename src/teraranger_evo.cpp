@@ -55,25 +55,22 @@ TerarangerEvo::TerarangerEvo()
 
   if (sensor_type_ == "evo_60m")
   {
-    range_msg.max_range = max_range_evo_60m;
-    range_msg.min_range = min_range_evo_60m;
-    ROS_INFO ("%f",range_msg.max_range);
+    range_msg.max_range = EVO_60M_MAX;
+    range_msg.min_range = EVO_60M_MIN;
   }
 
   else if (sensor_type_ == "evo_600hz")
   {
-    range_msg.max_range = max_range_evo_600hz;
-    range_msg.min_range = min_range_evo_600hz;
-    ROS_INFO ("%f",range_msg.max_range);
+    range_msg.max_range = EVO_600HZ_MAX;
+    range_msg.min_range = EVO_600HZ_MIN;
   }
 
   else if (!private_node_handle_.hasParam("sensor_type"))
     {
-     ROS_INFO("NO EVO TYPE SET, DEFAULT EVO 60m");
+     ROS_INFO("No evo type set, Evo 60m by default");
      private_node_handle_.param("sensor_type", sensor_type_, std::string("evo_60m"));
-     range_msg.max_range = max_range_evo_60m;
-     range_msg.min_range = min_range_evo_60m;
-     ROS_INFO ("%f",range_msg.max_range);
+     range_msg.max_range = EVO_60M_MAX;
+     range_msg.min_range = EVO_60M_MIN;
     }
 
   range_msg.header.frame_id = frame_id_;
