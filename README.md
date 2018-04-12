@@ -35,14 +35,14 @@ source devel/setup.bash
 
 After your workspace is built and sourced:
 ```
-rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=evo_60m
+rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_60m
 ```
 
 ## Running the TeraRanger Evo 600Hz
 
 After your workspace is built and sourced:
 ```
-rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=evo_600hz
+rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_600Hz
 ```
 
 WARNING: By default, if no sensor_type is specified, the default sensor chosen is the Evo 60m
