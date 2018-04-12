@@ -48,8 +48,38 @@ TerarangerEvo::TerarangerEvo()
 
   // Initialize range message
   range_msg.field_of_view = field_of_view;
-  range_msg.max_range = max_range;
-  range_msg.min_range = min_range;
+
+//  private_node_handle_.deleteParam("sensor_type");
+  private_node_handle_.getParam("sensor_type", sensor_type_);
+  ROS_INFO("[%s] sensor type: %s", ros::this_node::getName().c_str(), sensor_type_.c_str());
+
+  if (sensor_type_ == "Evo_60m")
+  {
+    range_msg.max_range = EVO_60M_MAX;
+    range_msg.min_range = EVO_60M_MIN;
+  }
+
+  else if (sensor_type_ == "Evo_600Hz")
+  {
+    range_msg.max_range = EVO_600HZ_MAX;
+    range_msg.min_range = EVO_600HZ_MIN;
+  }
+
+  else if (!private_node_handle_.hasParam("sensor_type"))
+  {
+   ROS_INFO("No evo type set, Evo 60m by default");
+   private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
+   range_msg.max_range = EVO_60M_MAX;
+   range_msg.min_range = EVO_60M_MIN;
+  }
+  else
+  {
+   ROS_INFO("Unknow Evo type, Evo 60m by default");
+   private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
+   range_msg.max_range = EVO_60M_MAX;
+   range_msg.min_range = EVO_60M_MIN;
+  }
+
   range_msg.header.frame_id = frame_id_;
   range_msg.radiation_type = sensor_msgs::Range::INFRARED;
 }

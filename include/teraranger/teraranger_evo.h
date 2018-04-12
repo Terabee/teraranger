@@ -11,6 +11,11 @@
 #define INVALID_MEASURE 1
 #define VALUE_TO_METER_FACTOR 0.001
 
+#define EVO_60M_MAX 60.0
+#define EVO_60M_MIN 0.5
+#define EVO_600HZ_MAX 8.0
+#define EVO_600HZ_MIN 0.75
+
 #define SERIAL_SPEED 115200
 #define SERIAL_TIMEOUT_MS 1000
 
@@ -41,13 +46,13 @@ class TerarangerEvo
     std::string portname_;
     std::string frame_id_;
     std::string ns_;
+    std::string sensor_type_;
+
 
     void spin();
 
   private:
     const float field_of_view = 0.0349066f;
-    const float max_range = 60.0f;
-    const float min_range = 0.0f;
     const std::string frame_id = "base_range_";
     sensor_msgs::Range range_msg;
 };

@@ -2,7 +2,8 @@
 
  This package is a collection of nodes for TeraRanger single point sensor modules.
 
- * [TeraRanger Evo](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/)
+ * [TeraRanger Evo 60m](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/)
+ * [TeraRanger Evo 600Hz](https://www.terabee.com/portfolio-item/teraranger-evo-600hz/)
  * [TeraRanger One](https://www.terabee.com/portfolio-item/teraranger-one/)
  * [TeraRanger Duo](https://www.terabee.com/portfolio-item/teraranger-duo/)
 
@@ -30,12 +31,21 @@ catkin_make
 source devel/setup.bash
 ```
 
-## Running the TeraRanger Evo
+## Running the TeraRanger Evo 60m
 
 After your workspace is built and sourced:
 ```
-rosrun teraranger evo _portname:=/dev/ttyACM0
+rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_60m
 ```
+
+## Running the TeraRanger Evo 600Hz
+
+After your workspace is built and sourced:
+```
+rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_600Hz
+```
+
+WARNING: By default, if no sensor_type is specified, the default sensor chosen is the Evo 60m
 
 ## Running the TeraRanger One
 
@@ -61,15 +71,15 @@ rosrun rqt_reconfigure rqt_reconfigure
 
 ## Product pictures and where to get the sensors
 
-### TeraRanger Evo
+### TeraRanger Evo 60m/Evo 600Hz
 
 <img src="http://www.teraranger.com/wp-content/uploads/2017/04/DSC0977-Editar.jpg" width="300"/>
 
 | Information |
 | -------------- |
-|[Product page](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/)|
+|[Product page Evo 60m](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/) / [Product page Evo 600Hz](https://www.terabee.com/portfolio-item/teraranger-evo-600hz/)|
 |[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/#specifications)|
-|[Online shop](http://www.teraranger.com/product/teraranger-evo/) |
+|[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
 
 ### TeraRanger One
 
@@ -90,4 +100,3 @@ rosrun rqt_reconfigure rqt_reconfigure
 |[Product page](https://www.terabee.com/portfolio-item/teraranger-duo/)|
 |[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-duo/#teraranger-specifications)|
 |[Online shop](http://www.teraranger.com/product-category/sensors/) |
-
