@@ -2,6 +2,13 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove unecessary files
+* Put the private parameters in define + correct ros info messages
+* Update for evo 600Hz
+* Contributors: BaptistePotier, Pierre-Louis Kabaradjian
+
 1.1.0 (2017-11-17)
 ------------------
 * Change license to MIT
