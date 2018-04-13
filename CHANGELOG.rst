@@ -2,8 +2,8 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.0 (2018-04-13)
+------------------
 * Remove unecessary files
 * Put the private parameters in define + correct ros info messages
 * Update for evo 600Hz
