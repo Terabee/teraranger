@@ -25,10 +25,8 @@ where <your_distro> is your ROS distribution (e.g. kinetic, lunar, indigo).
 You can install the teraranger package by running the command:
 
 ```
-sudo apt-get install ros-<your_distro>-teraranger
+sudo apt-get install ros-kinetic-teraranger
 ```
-
-where <your_distro> is your ROS distribution (e.g. kinetic, lunar, indigo).
 
 ### Building and Running the package from source
 
