@@ -17,7 +17,20 @@ sudo apt-get install ros-<your_distro>-serial
 
 where <your_distro> is your ROS distribution (e.g. kinetic, lunar, indigo).
 
-## Building and Running the package from source
+
+## Installing the package
+
+### Installing from PPAs
+
+You can install the teraranger package by running the command:
+
+```
+sudo apt-get install ros-<your_distro>-teraranger
+```
+
+where <your_distro> is your ROS distribution (e.g. kinetic, lunar, indigo).
+
+### Building and Running the package from source
 
  To clone and build the package in your workspace follow these steps:
 
