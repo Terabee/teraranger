@@ -7,6 +7,16 @@
  * [TeraRanger One](https://www.terabee.com/portfolio-item/teraranger-one/)
  * [TeraRanger Duo](https://www.terabee.com/portfolio-item/teraranger-duo/)
 
+## Dependencies
+
+This package depends on ROS serial library. To get it installed execute the command:
+
+```
+sudo apt-get install ros-kinetic-serial
+```
+
+where you can substitude _kinetic_ with any version of ROS you are running (e.g. lunar, indigo).
+
 ## Building and Running the package from source
 
  To clone and build the package in your workspace follow these steps:
@@ -68,6 +78,24 @@ You can change the mode of the sensors by running **rqt_reconfigure**:
 ```
 rosrun rqt_reconfigure rqt_reconfigure
 ```
+
+## Displaying Sensor Information
+
+When the teraranger node is running in a new terminal window execute:
+
+```
+rostopic list
+```
+
+to see list of available topics. If the teraranger node is running and the sensor is connected to your PC you should see topics starting with /teraranger.
+
+To display the messages arriving on the topic run the following command in a terminal:
+
+```
+rostopic echo /teraranger_one
+```
+
+(/teraranger_evo) for Evo sensor etc.
 
 ## Product pictures and where to get the sensors
 
