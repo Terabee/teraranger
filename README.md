@@ -12,10 +12,10 @@
 This package depends on ROS serial library. To get it installed execute the command:
 
 ```
-sudo apt-get install ros-kinetic-serial
+sudo apt-get install ros-<your_distro>-serial
 ```
 
-where you can substitude _kinetic_ with any version of ROS you are running (e.g. lunar, indigo).
+where <your_distro> is your ROS distribution (e.g. kinetic, lunar, indigo).
 
 ## Building and Running the package from source
 
@@ -92,10 +92,10 @@ to see list of available topics. If the teraranger node is running and the senso
 To display the messages arriving on the topic run the following command in a terminal:
 
 ```
-rostopic echo /teraranger_one
+rostopic echo /teraranger_<sensor_name>
 ```
 
-(/teraranger_evo) for Evo sensor etc.
+where <sensor_name> is the name of your sensor (e.g. one, evo).
 
 ## Product pictures and where to get the sensors
 
