@@ -53,7 +53,7 @@ After your workspace is built and sourced:
 rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_3m
 ```
 
-WARNING: By default, if no sensor_type is specified, the default sensor chosen is the Evo 60m
+**WARNING: By default, if no sensor_type is specified, the default sensor chosen is the Evo 60m**
 
 ## Running the TeraRanger One
 
