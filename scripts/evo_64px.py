@@ -99,15 +99,15 @@ class Evo_64px(object):
             self.depth_image_invert = config["depth_image_invert"]
             self.depth_image_interpolate = config["depth_image_interpolate"]
         elif level == 1:
-            if config["max_distance"] <= config["min_distance"]:
-                config["max_distance"] = config["min_distance"] + 1
-            self.max_distance = config["max_distance"]
-            self.min_distance = config["min_distance"]
+            if config["max_distance"] <= config["min_distance_mm"]:
+                config["max_distance_mm"] = config["min_distance_mm"] + 1
+            self.max_distance_mm = config["max_distance_mm"]
+            self.min_distance_mm = config["min_distance_mm"]
         elif level == 2:
-            if config["max_distance"] <= config["min_distance"]:
-                config["min_distance"] = config["max_distance"] - 1
-            self.max_distance = config["max_distance"]
-            self.min_distance = config["min_distance"]
+            if config["max_distance_mm"] <= config["min_distance_mm"]:
+                config["min_distance_mm"] = config["max_distance_mm"] - 1
+            self.max_distance_mm = config["max_distance"]
+            self.min_distance_mm = config["min_distance_mm"]
         elif level == 3:
             self.reconfigure_mode(config)
         else:
