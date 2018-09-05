@@ -86,7 +86,7 @@ rosrun rqt_reconfigure rqt_reconfigure
 | Information |
 | -------------- |
 |[Product page Evo 3m](https://www.terabee.com/portfolio-item/teraranger-evo-3m/)|
-|[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-evo-3m/#specifications)|
+|[Specification sheet](http://www.terabee.com/wp-content/uploads/2018/09/TeraRanger-Evo-3m-Specification-sheet.pdf)|
 |[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
 
 ### TeraRanger Evo 60m/Evo 600Hz
