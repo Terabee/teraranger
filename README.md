@@ -4,6 +4,7 @@
 
  * [TeraRanger Evo 60m](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/)
  * [TeraRanger Evo 600Hz](https://www.terabee.com/portfolio-item/teraranger-evo-600hz/)
+ * [TeraRanger Evo 3m](https://www.terabee.com/portfolio-item/teraranger-evo-3m/)
  * [TeraRanger One](https://www.terabee.com/portfolio-item/teraranger-one/)
  * [TeraRanger Duo](https://www.terabee.com/portfolio-item/teraranger-duo/)
 
@@ -66,7 +67,14 @@ After your workspace is built and sourced:
 rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_600Hz
 ```
 
-WARNING: By default, if no sensor_type is specified, the default sensor chosen is the Evo 60m
+## Running the TeraRanger Evo 3m
+
+After your workspace is built and sourced:
+```
+rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_3m
+```
+
+**WARNING: By default, if no sensor_type is specified, the default sensor chosen is the Evo 60m**
 
 ## Running the TeraRanger One
 
@@ -109,6 +117,16 @@ rostopic echo /teraranger_<sensor_name>
 where <sensor_name> is the name of your sensor (e.g. one, evo).
 
 ## Product pictures and where to get the sensors
+
+### TeraRanger Evo 3m
+
+<img src="https://www.terabee.com/wp-content/uploads/2018/08/TeraRanger-Evo-3m-bottom-picture-450px.jpg" width="300"/>
+
+| Information |
+| -------------- |
+|[Product page Evo 3m](https://www.terabee.com/portfolio-item/teraranger-evo-3m/)|
+|[Specification sheet](http://www.terabee.com/wp-content/uploads/2018/09/TeraRanger-Evo-3m-Specification-sheet.pdf)|
+|[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
 
 ### TeraRanger Evo 60m/Evo 600Hz
 

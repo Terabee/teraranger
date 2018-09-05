@@ -15,6 +15,8 @@
 #define EVO_60M_MIN 0.5
 #define EVO_600HZ_MAX 8.0
 #define EVO_600HZ_MIN 0.75
+#define EVO_3M_MAX 3.0
+#define EVO_3M_MIN 0.1
 
 #define SERIAL_SPEED 115200
 #define SERIAL_TIMEOUT_MS 1000
