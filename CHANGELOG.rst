@@ -2,8 +2,8 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.1 (2018-09-07)
+------------------
 * Update Readme for Evo 3m
 * Add Evo 3m compatibility to the driver
 * Update installation instructions in Readme
