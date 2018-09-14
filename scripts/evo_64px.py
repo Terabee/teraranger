@@ -22,7 +22,7 @@ class Evo_64px(object):
 
     def __init__(self):
         # ROS initialisation
-        rospy.init_node("evo_64px", anonymous=True)
+        rospy.init_node("evo_64px")
         self.publisher = rospy.Publisher("evo_64px/point_cloud", PointCloud2,
                                          queue_size=1)
         self.depth_publisher = rospy.Publisher("evo_64px/depth_image", Image,
