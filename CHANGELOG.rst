@@ -2,6 +2,13 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.1 (2018-09-07)
+------------------
+* Update Readme for Evo 3m
+* Add Evo 3m compatibility to the driver
+* Update installation instructions in Readme
+* Contributors: Baptiste Potier, Pierre-Louis Kabaradjian
+
 1.2.0 (2018-04-13)
 ------------------
 * Remove unecessary files

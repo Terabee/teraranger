@@ -65,6 +65,12 @@ TerarangerEvo::TerarangerEvo()
     range_msg.min_range = EVO_600HZ_MIN;
   }
 
+  else if (sensor_type_ == "Evo_3m")
+  {
+    range_msg.max_range = EVO_3M_MAX;
+    range_msg.min_range = EVO_3M_MIN;
+  }
+
   else if (!private_node_handle_.hasParam("sensor_type"))
   {
    ROS_INFO("No evo type set, Evo 60m by default");
