@@ -23,9 +23,9 @@ class Evo_64px(object):
     def __init__(self):
         # ROS initialisation
         rospy.init_node("evo_64px")
-        self.publisher = rospy.Publisher("evo_64px/point_cloud", PointCloud2,
+        self.publisher = rospy.Publisher("teraranger_evo_64px/point_cloud", PointCloud2,
                                          queue_size=1)
-        self.depth_publisher = rospy.Publisher("evo_64px/depth_image", Image,
+        self.depth_publisher = rospy.Publisher("teraranger_evo_64px/depth_image", Image,
                                                queue_size=1)
         self.window_size = rospy.get_param("~window_size", 5)
         self.portname = rospy.get_param("~portname", "/dev/ttyACM0")
@@ -99,15 +99,15 @@ class Evo_64px(object):
             self.depth_image_invert = config["depth_image_invert"]
             self.depth_image_interpolate = config["depth_image_interpolate"]
         elif level == 1:
-            if config["max_distance"] <= config["min_distance_mm"]:
+            if config["max_distance_mm"] <= config["min_distance_mm"]:
                 config["max_distance_mm"] = config["min_distance_mm"] + 1
-            self.max_distance_mm = config["max_distance_mm"]
-            self.min_distance_mm = config["min_distance_mm"]
+            self.max_distance = config["max_distance_mm"]
+            self.min_distance = config["min_distance_mm"]
         elif level == 2:
             if config["max_distance_mm"] <= config["min_distance_mm"]:
                 config["min_distance_mm"] = config["max_distance_mm"] - 1
-            self.max_distance_mm = config["max_distance"]
-            self.min_distance_mm = config["min_distance_mm"]
+            self.max_distance = config["max_distance_mm"]
+            self.min_distance = config["min_distance_mm"]
         elif level == 3:
             self.reconfigure_mode(config)
         else:
