@@ -9,6 +9,8 @@
  * [TeraRanger One](https://www.terabee.com/portfolio-item/teraranger-one/)
  * [TeraRanger Duo](https://www.terabee.com/portfolio-item/teraranger-duo/)
 
+Link to ROS Wiki package documentation: [Here](http://wiki.ros.org/teraranger)
+
 ## Dependencies
 
 This package depends on ROS serial library. To get it installed execute the command:
