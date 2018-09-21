@@ -64,7 +64,7 @@ rosrun teraranger evo_64px.py _portname:=/dev/ttyACM0
 ```
 
 This node is publishing on two topics:
-* teraranger_evo_64px/depth_image_array: a colormapped RGB image based on depth data
+* teraranger_evo_64px/depth_image: a colormapped RGB image based on depth data
 * teraranger_evo_64px/point_cloud: a point cloud in the frame of the sensor
 
 ## Running the TeraRanger Evo 60m
