@@ -115,7 +115,7 @@ group.1 {
     3.type = int
     3.default = 5000
     4.name = Mode
-    4.desc = Set the sensor mode: 0 = HDR (Allows ranging from 10cm to 5m), 1 = Fast (Allows ranging from 1m to 5m with faster update rate)
+    4.desc = Set the sensor mode: 0 = Close Range (Allows ranging from 10cm to 5m), 1 = Fast (Allows ranging from 1m to 5m with faster update rate)
     4.type = int
     4.default = 0
   }

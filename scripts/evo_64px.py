@@ -116,9 +116,9 @@ class Evo_64px(object):
         return config
 
     def reconfigure_mode(self, config):
-        if config["Mode"] == Evo_64pxConfig.Evo_64px_HDR:
+        if config["Mode"] == Evo_64pxConfig.Evo_64px_Close_Range:
             self.send_command("\x00\x21\x01\xBC")
-            rospy.loginfo("Changing mode to HDR")
+            rospy.loginfo("Changing mode to Close Range")
         if config["Mode"] == Evo_64pxConfig.Evo_64px_Fast:
             self.send_command("\x00\x21\x02\xB5")
             rospy.loginfo("Changing mode to Fast")
