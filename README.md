@@ -9,8 +9,7 @@
  * [TeraRanger Duo](https://www.terabee.com/portfolio-item/teraranger-duo/)
 
 ## Dependencies
-
-This package depends on ROS serial library. To get it installed execute the command:
+This package depends on this [serial](http://wiki.ros.org/serial) library. To get it, execute the following command:
 
 ```
 sudo apt-get install ros-<your_distro>-serial
@@ -18,6 +17,7 @@ sudo apt-get install ros-<your_distro>-serial
 
 where <your_distro> is your ROS distribution (e.g. kinetic, lunar, indigo).
 
+If it's not available for your distribution, clone https://github.com/wjwwood/serial into your workspace, then build and source your workspace.
 
 ## Installing the package
 
