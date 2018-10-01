@@ -65,6 +65,7 @@ class Evo_64px(object):
         )
         self.port.isOpen()
         self.crc32 = crcmod.predefined.mkPredefinedCrcFun('crc-32-mpeg')
+        self.crc8 = crcmod.predefined.mkPredefinedCrcFun('crc-8')
         self.serial_lock = threading.Lock()
 
     def to_point_cloud(self, depth_array):
@@ -196,11 +197,17 @@ class Evo_64px(object):
             else:
                 ack += self.port.read(3)
 
-            # Check if ACK or NACK
-            if ord(ack[2]) == 0:
-                return True
+            # Check ACK crc8
+            crc8 = self.crc8(ack[:3])
+            if crc8 == ord(ack[3]):
+                # Check if ACK or NACK
+                if ord(ack[2]) == 0:
+                    return True
+                else:
+                    print "Command not acknowledged"
+                    return False
             else:
-                rospy.logerr("Command not acknowledged")
+                print "Error in ACK checksum"
                 return False
 
     def start_sensor(self):
