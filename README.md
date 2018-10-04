@@ -134,7 +134,7 @@ where <sensor_name> is the name of your sensor (e.g. one, evo).
 
 ### TeraRanger Evo 64px
 
-<img src="https://www.terabee.com/wp-content/uploads/2018/08/XXimageXX" width="300"/>
+<img src="https://www.terabee.com/wp-content/uploads/2018/09/Evo-64px-no-background-1.png" width="300"/>
 
 | Information |
 | -------------- |
