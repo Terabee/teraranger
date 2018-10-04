@@ -5,6 +5,7 @@ project(teraranger)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
   sensor_msgs
   std_msgs
   dynamic_reconfigure
@@ -16,6 +17,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 generate_dynamic_reconfigure_options(
   cfg/TerarangerOne.cfg
   cfg/TerarangerDuo.cfg
+  cfg/Evo_64px.cfg
 )
 
 catkin_package(

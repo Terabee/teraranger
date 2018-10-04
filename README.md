@@ -2,11 +2,14 @@
 
  This package is a collection of nodes for TeraRanger single point sensor modules.
 
+ * [TeraRanger Evo 64px](https://www.terabee.com/portfolio-item/teraranger-evo-64px-multi-pixel-time-of-flight-sensor/)
  * [TeraRanger Evo 60m](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/)
  * [TeraRanger Evo 600Hz](https://www.terabee.com/portfolio-item/teraranger-evo-600hz/)
  * [TeraRanger Evo 3m](https://www.terabee.com/portfolio-item/teraranger-evo-3m/)
  * [TeraRanger One](https://www.terabee.com/portfolio-item/teraranger-one/)
  * [TeraRanger Duo](https://www.terabee.com/portfolio-item/teraranger-duo/)
+
+Link to ROS Wiki package documentation: [Here](http://wiki.ros.org/teraranger)
 
 ## Dependencies
 This package depends on this [serial](http://wiki.ros.org/serial) library. To get it, execute the following command:
@@ -52,6 +55,17 @@ cd ~/ros_ws
 catkin_make
 source devel/setup.bash
 ```
+
+## Running the TeraRanger Evo 64px
+
+After your workspace is built and sourced:
+```
+rosrun teraranger evo_64px.py _portname:=/dev/ttyACM0
+```
+
+This node is publishing on two topics:
+* teraranger_evo_64px/depth_image: a colormapped RGB image based on depth data
+* teraranger_evo_64px/point_cloud: a point cloud in the frame of the sensor
 
 ## Running the TeraRanger Evo 60m
 
@@ -117,6 +131,16 @@ rostopic echo /teraranger_<sensor_name>
 where <sensor_name> is the name of your sensor (e.g. one, evo).
 
 ## Product pictures and where to get the sensors
+
+### TeraRanger Evo 64px
+
+<img src="https://www.terabee.com/wp-content/uploads/2018/09/Evo-64px-no-background-1.png" width="300"/>
+
+| Information |
+| -------------- |
+|[Product page Evo 64px](https://www.terabee.com/portfolio-item/teraranger-evo-64px-multi-pixel-time-of-flight-sensor/)|
+|[Specification sheet](https://www.terabee.com/wp-content/uploads/2018/09/TeraRanger-Evo-64px-Specification-sheet.pdf)|
+|[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
 
 ### TeraRanger Evo 3m
 
