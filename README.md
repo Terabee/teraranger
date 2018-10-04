@@ -1,6 +1,6 @@
 # ROS package for TeraRanger modules
 
- This package is a collection of nodes for TeraRanger single point sensor modules.
+ This package is a collection of nodes for TeraRanger single sensor modules.
 
  * [TeraRanger Evo 64px](https://www.terabee.com/portfolio-item/teraranger-evo-64px-multi-pixel-time-of-flight-sensor/)
  * [TeraRanger Evo 60m](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/)
