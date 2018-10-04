@@ -139,7 +139,7 @@ where <sensor_name> is the name of your sensor (e.g. one, evo).
 | Information |
 | -------------- |
 |[Product page Evo 64px](https://www.terabee.com/portfolio-item/teraranger-evo-64px-multi-pixel-time-of-flight-sensor/)|
-|[Specification sheet](https://www.terabee.com/wp-content/uploads/2018/09/TeraRanger-Evo-64px-Specification-sheet.pdf)|
+|[Specification sheet](https://www.terabee.com/wp-content/uploads/2018/10/TeraRanger-Evo-64px-Specification-sheet.pdf)|
 |[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
 
 ### TeraRanger Evo 3m
