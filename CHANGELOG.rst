@@ -2,8 +2,8 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2018-10-08)
+------------------
 * Update maintainer list
 * Update Readme for Evo 64px
 * Add driver node for Evo 64px
