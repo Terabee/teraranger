@@ -2,6 +2,13 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update maintainer list
+* Update Readme for Evo 64px
+* Add driver node for Evo 64px
+* Contributors: Baptiste Potier, Pierre-Louis Kabaradjian
+
 1.2.1 (2018-09-07)
 ------------------
 * Update Readme for Evo 3m
