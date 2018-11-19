@@ -238,18 +238,20 @@ class Evo_Thermal(object):
         if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Dev:
             self.selected_cmap = self.cmap_list[0]
             rospy.loginfo("Change colormap to Dev format")
-        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Ice:
+        elif config["Map"] == Evo_ThermalConfig.Evo_Thermal_Ice:
             self.selected_cmap = self.cmap_list[1]
             rospy.loginfo("Change colormap to Ice format")
-        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Ironbow:
+        elif config["Map"] == Evo_ThermalConfig.Evo_Thermal_Ironbow:
             self.selected_cmap = self.cmap_list[2]
             rospy.loginfo("Change colormap to Ironbow format")
-        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_High_contrast:
+        elif config["Map"] == Evo_ThermalConfig.Evo_Thermal_High_contrast:
             self.selected_cmap = self.cmap_list[3]
             rospy.loginfo("Change colormap to High Contrast format")
-        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Whot:
+        elif config["Map"] == Evo_ThermalConfig.Evo_Thermal_Whot:
             self.selected_cmap = self.cmap_list[4]
             rospy.loginfo("Change colormap to White Hot format")
+        else:
+            rospy.logerr("Unknown colormap index")
 
     def publish(self, msg):
         self.publisher.publish(msg)
