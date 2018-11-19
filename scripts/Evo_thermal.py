@@ -272,18 +272,29 @@ class Evo_Thermal(object):
             return False
 
     def start_sensor(self):
-        if self.send_command("\x00\x52\x02\x01\xDF"):
+        rospy.loginfo("Starting sensor...")
+        res = self.send_command("\x00\x52\x02\x01\xDF")
+        if res:
             rospy.loginfo("Sensor started successfully")
-        if self.send_command("\x00\x11\x02\x4C"):
-            rospy.loginfo("Sensor configured successfully")
+            return True
+        else:
+            rospy.logerr("Failed to start sensor")
+            return False
 
     def stop_sensor(self):
-        if self.send_command("\x00\x52\x02\x00\xD8"):
+        rospy.loginfo("Stopping sensor...")
+        res = self.send_command("\x00\x52\x02\x00\xD8")
+        if res:
             rospy.loginfo("Sensor stopped successfully")
+            return True
+        else:
+            rospy.logerr("Failed to stop sensor")
+            return False
 
     def run(self):
         self.port.flushInput()
-        self.start_sensor()
+        if not self.start_sensor():
+            return
 
         while not rospy.is_shutdown():
             frame = self.get_frame()
