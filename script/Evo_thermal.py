@@ -1,0 +1,368 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+import rospy
+import numpy as np
+import serial
+import time
+from struct import unpack
+import cv2
+from cv_bridge import CvBridge
+from time import time
+from sensor_msgs.msg import Image
+import crcmod.predefined
+import serial.tools.list_ports
+
+from teraranger.cfg import Evo_ThermalConfig
+from dynamic_reconfigure.server import Server
+
+
+class Evo_Thermal(object):
+    def __init__(self):
+        # ROS INIT
+        rospy.init_node("evo_thermal")
+        self.publisher = rospy.Publisher("evo_thermal/thermal_image", Image, queue_size=1)
+
+        self.window_size = rospy.get_param("~window_size", 5)
+        self.portname = rospy.get_param("~portname", "/dev/ttyACM0")
+        self.baudrate = rospy.get_param("~baudrate", "115200")
+        self.evo_thermal_frame = "evo_thermal_frame"
+        self.bridge = CvBridge()
+
+        # Init variables
+        self.cmap_number = 0
+        self.MinAvg = []
+        self.MaxAvg = []
+        self.TAavg = []
+
+        # Get colormap from file
+        self.cmap_devkit, self.cmap_ice, self.cmap_ironbow, self.cmap_highcontrast, self.cmap_whot = self.get_colormap()
+        # Colormap are stored in a list for easier swap
+        self.cmap_list = [self.cmap_devkit, self.cmap_ice, self.cmap_ironbow, self.cmap_highcontrast, self.cmap_whot,
+                          cv2.COLORMAP_HOT, cv2.COLORMAP_JET]
+        self.selected_cmap = self.cmap_list[self.cmap_number]
+
+        # End of colormap config
+        # self.ItemQueue = ItemQueue
+        # self.NewScales = NewScales
+        #
+        # # Start of events
+        # self.FrameReady = FrameReady
+        # self.ChangeCmap = ChangeCmap
+        # self.ChangeScalesEvent = ChangeScalesEvent
+        # self.AutoScaleEvent = AutoScaleEvent
+        # self.ManualScaleEvent = ManualScaleEvent
+        # self.InterpolateEvent = InterpolateEvent
+        # self.StartSensorEvent = StartSensorEvent
+        # self.StopSensorEvent = StopSensorEvent
+        # self.MirrorXaxisEvent = MirrorXaxisEvent
+        # self.MirrorYaxisEvent = MirrorYaxisEvent
+
+        # Converter frame param
+        self.scaling = 10.0
+        self.celsius_offset = 273.15
+
+        # Initialize reconfiguration server
+        self.evo_thermal_cfg_server = Server(Evo_ThermalConfig, self.evo_thermal_callback)
+
+        # Reconfigure parameters initialization
+        self.thermal_image_invert = False
+        self.thermal_image_interpolate = False
+        self.thermal_image_autoscale = True
+        self.manual_min_scaling = 20.0
+        self.manual_max_scaling = 30.0
+
+        # FPS counter init
+        self.fps_frame_count = 0
+        self.fps_window = 30
+        self.last_fps_timestamp = time()
+        self.fps = 0
+
+        self.port = serial.Serial(
+            port=self.portname,
+            baudrate=self.baudrate,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            bytesize=serial.EIGHTBITS,
+            timeout=0.1
+        )
+
+        self.port.isOpen()
+        self.crc32 = crcmod.predefined.mkPredefinedCrcFun('crc-32-mpeg')
+
+    def get_frame(self):
+        got_frame = False
+        while not got_frame:
+            # Polls for header
+            header = self.port.read(2)
+            # This prevents hanging in this function
+            if len(header) < 2:
+                return None
+            header = unpack('H', str(header))
+            if header[0] == 13:
+                # Header received, now read rest of frame
+                data = self.port.read(2068)
+                # Calculate CRC for frame (except CRC value and header)
+                calculatedCRC = self.crc32(data[:2064])
+                data = unpack("H" * 1034, str(data))
+                receivedCRC = (data[1032] & 0xFFFF) << 16
+                receivedCRC |= data[1033] & 0xFFFF
+                self.TA = data[1024]
+                data = data[:1024]
+                data = np.reshape(data, (32, 32))
+                # Compare calculated CRC to received CRC
+                if calculatedCRC == receivedCRC:
+                    got_frame = True
+                else:
+                    print "Bad CRC"
+                    return None
+            # This prevents hanging in this function
+            else:
+                return None
+
+        self.port.flushInput()
+
+        return data
+
+    def convert_frame(self, array):
+        # Data is sent in dK, need to convert to celsius
+        return (array / self.scaling) - self.celsius_offset
+
+    def auto_scaling(self, data):
+        # Get min/max/TA for averaging
+        frameMin, frameMax = data.min(), data.max()
+        self.MinAvg.append(frameMin)
+        self.MaxAvg.append(frameMax)
+        self.TAavg.append(self.TA)
+
+        # Need at least 10 frames for better average
+        if len(self.MaxAvg) >= 10:
+            AvgMax = sum(self.MaxAvg) / len(self.MaxAvg)
+            AvgMin = sum(self.MinAvg) / len(self.MinAvg)
+            AvgTA = sum(self.TAavg) / len(self.TAavg)
+            # Delete oldest insertions
+            self.TAavg.pop(0)
+            self.MaxAvg.pop(0)
+            self.MinAvg.pop(0)
+        else:
+            # Until list fills, use current frame min/max/ptat
+            AvgMax = frameMax
+            AvgMin = frameMin
+            AvgTA = self.TA
+
+        # Scale based on boolean toggled by event #
+        if self.thermal_image_autoscale:
+            # Auto scale based on avg min/max values for last 10 frames
+            data[data <= AvgMin] = AvgMin
+            data[data >= AvgMax] = AvgMax
+            multiplier = 255 / (AvgMax - AvgMin)
+            data = data - AvgMin
+            data = data * multiplier
+        else:
+            # Manual scale based on user setting
+            data[data <= self.manual_min_scaling] = self.manual_min_scaling
+            data[data >= self.manual_max_scaling] = self.manual_max_scaling
+            multiplier = 255 / (self.manual_max_scaling - self.manual_min_scaling)
+            data = data - self.manual_min_scaling
+            data = data * multiplier
+        frame = data.astype(np.uint8)
+
+        #        kernel = np.ones((3,3), np.float32)/9
+        #        data = cv2.filter2D(data, -1, kernel)
+
+        # Check if PP is toggled on
+        if self.thermal_image_interpolate:
+            # If on, interpolate and blur
+            frame = cv2.resize(frame, (128, 128), interpolation=cv2.INTER_LINEAR)
+            frame = cv2.GaussianBlur(frame, (9, 9), 9)
+        else:
+            pass
+
+        # Resize the frame
+        frame = cv2.resize(frame, (512, 512), interpolation=cv2.INTER_NEAREST)
+
+        # Mirror frame if necessary
+        if self.thermal_image_invert:
+            frame = cv2.flip(frame, 1)  # flip the image horizontally
+            frame = cv2.flip(frame, 0)  # flip the image vertically
+        else:
+            pass
+
+        # Apply selected colormap and stamp FPS
+        frame = cv2.applyColorMap(frame, self.selected_cmap)
+        cv2.putText(img=frame, text='FPS:{:.1f}'.format(self.fps),
+                    org=(440, 510), fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                    fontScale=0.5, color=(0, 255, 0))
+
+        return frame, [AvgMin, AvgMax, AvgTA]
+
+    def get_colormap(self):
+        # Get colormap from files
+        # Created using http://jdherman.github.io/colormap/
+        r = []
+        g = []
+        b = []
+        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/dev_kit_cmap.txt', 'r') as f:
+            for i in range(256):
+                x, y, z = f.readline().split(',')
+                r.append(x)
+                g.append(y)
+                b.append(z.replace(";\n", ""))
+        thermal0 = np.zeros((256, 1, 3), dtype=np.uint8)
+        # We use BGR because that's default for openCV
+        thermal0[:, 0, 0] = b
+        thermal0[:, 0, 1] = g
+        thermal0[:, 0, 2] = r
+
+        r = []
+        g = []
+        b = []
+        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/ice.txt', 'r') as f:
+            for i in range(256):
+                x, y, z = f.readline().split(',')
+                r.append(x)
+                g.append(y)
+                b.append(z.replace(";\n", ""))
+        thermal1 = np.zeros((256, 1, 3), dtype=np.uint8)
+        thermal1[:, 0, 0] = b
+        thermal1[:, 0, 1] = g
+        thermal1[:, 0, 2] = r
+
+        r = []
+        g = []
+        b = []
+        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/ironbow.txt', 'r') as f:
+            for i in range(256):
+                x, y, z = f.readline().split(',')
+                r.append(x)
+                g.append(y)
+                b.append(z.replace(";\n", ""))
+        thermal2 = np.zeros((256, 1, 3), dtype=np.uint8)
+        thermal2[:, 0, 0] = b
+        thermal2[:, 0, 1] = g
+        thermal2[:, 0, 2] = r
+
+        r = []
+        g = []
+        b = []
+        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/high_contrast.txt', 'r') as f:
+            for i in range(256):
+                x, y, z = f.readline().split(',')
+                r.append(x)
+                g.append(y)
+                b.append(z.replace(";\n", ""))
+        thermal3 = np.zeros((256, 1, 3), dtype=np.uint8)
+        thermal3[:, 0, 0] = b
+        thermal3[:, 0, 1] = g
+        thermal3[:, 0, 2] = r
+
+        r = []
+        g = []
+        b = []
+        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/whot.txt', 'r') as f:
+            for i in range(256):
+                x, y, z = f.readline().split(',')
+                r.append(x)
+                g.append(y)
+                b.append(z.replace(";\n", ""))
+        thermal4 = np.zeros((256, 1, 3), dtype=np.uint8)
+        thermal4[:, 0, 0] = b
+        thermal4[:, 0, 1] = g
+        thermal4[:, 0, 2] = r
+        return thermal0, thermal1, thermal2, thermal3, thermal4,
+
+    def evo_thermal_callback(self, config, level):
+        rospy.logdebug("Evo_Thermal parameters reconfigure request".format(**config))
+        if level == -1:
+            return config
+        if level == 0:
+            self.thermal_image_invert = config["thermal_image_invert"]
+            self.thermal_image_interpolate = config["thermal_image_interpolate"]
+        elif level == 1:
+            self.thermal_image_autoscale = config["thermal_image_autoscale"]
+        elif level == 2:
+            if config["manual_max_scaling"] <= config["manual_min_scaling"]:
+                config["manual_max_scaling"] = config["manual_min_scaling"] + 1
+            if config["manual_max_scaling"] <= config["manual_min_scaling"]:
+                config["manual_min_scaling"] = config["manual_max_scaling"] - 1
+            self.manual_min_scaling = config["manual_min_scaling"]
+            self.manual_max_scaling = config["manual_max_scaling"]
+        elif level == 3:
+            self.reconfigure_color_map(config)
+        else:
+            rospy.loginfo("Invalid reconfiguration level")
+        return config
+
+    def reconfigure_color_map(self, config):
+        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Dev:
+            self.selected_cmap = self.cmap_list[0]
+            rospy.loginfo("Change colormap to Dev format")
+        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Ice:
+            self.selected_cmap = self.cmap_list[1]
+            rospy.loginfo("Change colormap to Ice format")
+        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Ironbow:
+            self.selected_cmap = self.cmap_list[2]
+            rospy.loginfo("Change colormap to Ironbow format")
+        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_High_contrast:
+            self.selected_cmap = self.cmap_list[3]
+            rospy.loginfo("Change colormap to High Contrast format")
+        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Whot:
+            self.selected_cmap = self.cmap_list[4]
+            rospy.loginfo("Change colormap to White Hot format")
+
+    def publish(self, msg):
+        self.publisher.publish(msg)
+
+    def send_command(self, command):
+        self.port.write(command)
+        ack = self.port.read(1)
+        # This loop discards buffered frames until an ACK header is reached
+        while ord(ack) != 20:
+            self.port.read()
+            ack = self.port.read(1)
+        else:
+            ack += self.port.read(3)
+
+        # Check if ACK or NACK
+        if ord(ack[2]) == 0:
+            return True
+        else:
+            rospy.logerr("Command not acknowledged")
+            return False
+
+    def start_sensor(self):
+        if self.send_command("\x00\x52\x02\x01\xDF"):
+            rospy.loginfo("Sensor started successfully")
+        if self.send_command("\x00\x11\x02\x4C"):
+            rospy.loginfo("Sensor configured successfully")
+
+    def stop_sensor(self):
+        if self.send_command("\x00\x52\x02\x00\xD8"):
+            rospy.loginfo("Sensor stopped successfully")
+
+    def run(self):
+        self.port.flushInput()
+        self.start_sensor()
+
+        while not rospy.is_shutdown():
+            frame = self.get_frame()
+            if frame is not None:
+                converted_frame = self.convert_frame(frame)
+                thermal_image, averages = self.auto_scaling(converted_frame)
+
+                # Publishing thermal image
+                img_msg = self.bridge.cv2_to_imgmsg(thermal_image)
+                img_msg.header.stamp = rospy.Time.now()
+
+                self.publisher.publish(img_msg)
+
+        else:
+            self.stop_sensor()
+            rospy.logwarn("Node shutting down")
+
+
+if __name__ == "__main__":
+    evo_thermal = Evo_Thermal()
+    try:
+        evo_thermal.run()
+    except rospy.ROSInterruptException:
+        exit()

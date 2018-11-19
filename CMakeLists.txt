@@ -18,6 +18,7 @@ generate_dynamic_reconfigure_options(
   cfg/TerarangerOne.cfg
   cfg/TerarangerDuo.cfg
   cfg/Evo_64px.cfg
+  cfg/Evo_thermal.cfg
 )
 
 catkin_package(
