@@ -11,6 +11,7 @@ from time import time
 from sensor_msgs.msg import Image
 import crcmod.predefined
 import serial.tools.list_ports
+import os
 
 from teraranger.cfg import Evo_ThermalConfig
 from dynamic_reconfigure.server import Server
@@ -34,28 +35,19 @@ class Evo_Thermal(object):
         self.MaxAvg = []
         self.TAavg = []
 
-        # Get colormap from file
-        self.cmap_devkit, self.cmap_ice, self.cmap_ironbow, self.cmap_highcontrast, self.cmap_whot = self.get_colormap()
-        # Colormap are stored in a list for easier swap
-        self.cmap_list = [self.cmap_devkit, self.cmap_ice, self.cmap_ironbow, self.cmap_highcontrast, self.cmap_whot,
-                          cv2.COLORMAP_HOT, cv2.COLORMAP_JET]
+        # Get colormap from files
+        colormap_files = (
+            "resources/colormap/dev_kit_cmap.txt",
+            "resources/colormap/ice.txt",
+            "resources/colormap/ironbow.txt",
+            "resources/colormap/high_contrast.txt",
+            "resources/colormap/whot.txt",
+        )
+        self.cmap_list = self.load_colormap_files(colormap_files)
+        # We also append opencv colormaps
+        self.cmap_list.append(cv2.COLORMAP_HOT)
+        self.cmap_list.append(cv2.COLORMAP_JET)
         self.selected_cmap = self.cmap_list[self.cmap_number]
-
-        # End of colormap config
-        # self.ItemQueue = ItemQueue
-        # self.NewScales = NewScales
-        #
-        # # Start of events
-        # self.FrameReady = FrameReady
-        # self.ChangeCmap = ChangeCmap
-        # self.ChangeScalesEvent = ChangeScalesEvent
-        # self.AutoScaleEvent = AutoScaleEvent
-        # self.ManualScaleEvent = ManualScaleEvent
-        # self.InterpolateEvent = InterpolateEvent
-        # self.StartSensorEvent = StartSensorEvent
-        # self.StopSensorEvent = StopSensorEvent
-        # self.MirrorXaxisEvent = MirrorXaxisEvent
-        # self.MirrorYaxisEvent = MirrorYaxisEvent
 
         # Converter frame param
         self.scaling = 10.0
@@ -195,80 +187,30 @@ class Evo_Thermal(object):
 
         return frame, [AvgMin, AvgMax, AvgTA]
 
-    def get_colormap(self):
+    def load_colormap_files(self, files):
         # Get colormap from files
         # Created using http://jdherman.github.io/colormap/
-        r = []
-        g = []
-        b = []
-        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/dev_kit_cmap.txt', 'r') as f:
-            for i in range(256):
-                x, y, z = f.readline().split(',')
-                r.append(x)
-                g.append(y)
-                b.append(z.replace(";\n", ""))
-        thermal0 = np.zeros((256, 1, 3), dtype=np.uint8)
-        # We use BGR because that's default for openCV
-        thermal0[:, 0, 0] = b
-        thermal0[:, 0, 1] = g
-        thermal0[:, 0, 2] = r
 
-        r = []
-        g = []
-        b = []
-        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/ice.txt', 'r') as f:
-            for i in range(256):
-                x, y, z = f.readline().split(',')
-                r.append(x)
-                g.append(y)
-                b.append(z.replace(";\n", ""))
-        thermal1 = np.zeros((256, 1, 3), dtype=np.uint8)
-        thermal1[:, 0, 0] = b
-        thermal1[:, 0, 1] = g
-        thermal1[:, 0, 2] = r
+        colormap_list = []
+        for rel_file_path in files:
+            full_path = os.path.join(os.path.dirname(__file__), os.pardir, rel_file_path)
+            with open(full_path, 'r') as f:
+                r = []
+                g = []
+                b = []
+                for i in range(256):
+                    x, y, z = f.readline().split(',')
+                    r.append(x)
+                    g.append(y)
+                    b.append(z.replace(";\n", ""))
+            colormap = np.zeros((256, 1, 3), dtype=np.uint8)
+            # We use BGR because that's default for openCV
+            colormap[:, 0, 0] = b
+            colormap[:, 0, 1] = g
+            colormap[:, 0, 2] = r
+            colormap_list.append(colormap)
 
-        r = []
-        g = []
-        b = []
-        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/ironbow.txt', 'r') as f:
-            for i in range(256):
-                x, y, z = f.readline().split(',')
-                r.append(x)
-                g.append(y)
-                b.append(z.replace(";\n", ""))
-        thermal2 = np.zeros((256, 1, 3), dtype=np.uint8)
-        thermal2[:, 0, 0] = b
-        thermal2[:, 0, 1] = g
-        thermal2[:, 0, 2] = r
-
-        r = []
-        g = []
-        b = []
-        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/high_contrast.txt', 'r') as f:
-            for i in range(256):
-                x, y, z = f.readline().split(',')
-                r.append(x)
-                g.append(y)
-                b.append(z.replace(";\n", ""))
-        thermal3 = np.zeros((256, 1, 3), dtype=np.uint8)
-        thermal3[:, 0, 0] = b
-        thermal3[:, 0, 1] = g
-        thermal3[:, 0, 2] = r
-
-        r = []
-        g = []
-        b = []
-        with open('/home/baptiste/catkin_ws/src/teraranger/resources/colormap/whot.txt', 'r') as f:
-            for i in range(256):
-                x, y, z = f.readline().split(',')
-                r.append(x)
-                g.append(y)
-                b.append(z.replace(";\n", ""))
-        thermal4 = np.zeros((256, 1, 3), dtype=np.uint8)
-        thermal4[:, 0, 0] = b
-        thermal4[:, 0, 1] = g
-        thermal4[:, 0, 2] = r
-        return thermal0, thermal1, thermal2, thermal3, thermal4,
+        return colormap_list
 
     def evo_thermal_callback(self, config, level):
         rospy.logdebug("Evo_Thermal parameters reconfigure request".format(**config))
