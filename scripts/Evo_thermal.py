@@ -31,9 +31,9 @@ class Evo_Thermal(object):
 
         # Init variables
         self.cmap_number = 0
-        self.MinAvg = []
-        self.MaxAvg = []
-        self.TAavg = []
+        self.minima_list = []
+        self.maxima_list = []
+        self.ptat_list = []
 
         # Get colormap from files
         colormap_files = (
@@ -99,7 +99,7 @@ class Evo_Thermal(object):
                 data = unpack("H" * 1034, str(data))
                 receivedCRC = (data[1032] & 0xFFFF) << 16
                 receivedCRC |= data[1033] & 0xFFFF
-                self.TA = data[1024]
+                self.ptat = data[1024]
                 data = data[:1024]
                 data = np.reshape(data, (32, 32))
                 # Compare calculated CRC to received CRC
@@ -121,34 +121,34 @@ class Evo_Thermal(object):
         return (array / self.scaling) - self.celsius_offset
 
     def auto_scaling(self, data):
-        # Get min/max/TA for averaging
-        frameMin, frameMax = data.min(), data.max()
-        self.MinAvg.append(frameMin)
-        self.MaxAvg.append(frameMax)
-        self.TAavg.append(self.TA)
+        # Get min/max/ptat for averaging
+        frame_min, frame_max = data.min(), data.max()
+        self.minima_list.append(frame_min)
+        self.maxima_list.append(frame_max)
+        self.ptat_list.append(self.ptat)
 
         # Need at least 10 frames for better average
-        if len(self.MaxAvg) >= 10:
-            AvgMax = sum(self.MaxAvg) / len(self.MaxAvg)
-            AvgMin = sum(self.MinAvg) / len(self.MinAvg)
-            AvgTA = sum(self.TAavg) / len(self.TAavg)
+        if len(self.maxima_list) >= 10:
+            avg_max = sum(self.maxima_list) / len(self.maxima_list)
+            avg_min = sum(self.minima_list) / len(self.minima_list)
+            avg_ptat = sum(self.ptat_list) / len(self.ptat_list)
             # Delete oldest insertions
-            self.TAavg.pop(0)
-            self.MaxAvg.pop(0)
-            self.MinAvg.pop(0)
+            self.ptat_list.pop(0)
+            self.maxima_list.pop(0)
+            self.minima_list.pop(0)
         else:
             # Until list fills, use current frame min/max/ptat
-            AvgMax = frameMax
-            AvgMin = frameMin
-            AvgTA = self.TA
+            avg_max = frame_max
+            avg_min = frame_min
+            avg_ptat = self.ptat
 
         # Scale based on boolean toggled by event #
         if self.thermal_image_autoscale:
             # Auto scale based on avg min/max values for last 10 frames
-            data[data <= AvgMin] = AvgMin
-            data[data >= AvgMax] = AvgMax
-            multiplier = 255 / (AvgMax - AvgMin)
-            data = data - AvgMin
+            data[data <= avg_min] = avg_min
+            data[data >= avg_max] = avg_max
+            multiplier = 255 / (avg_max - avg_min)
+            data = data - avg_min
             data = data * multiplier
         else:
             # Manual scale based on user setting
@@ -159,39 +159,29 @@ class Evo_Thermal(object):
             data = data * multiplier
         frame = data.astype(np.uint8)
 
-        #        kernel = np.ones((3,3), np.float32)/9
-        #        data = cv2.filter2D(data, -1, kernel)
-
-        # Check if PP is toggled on
+        # Check if interpolation is toggled on
         if self.thermal_image_interpolate:
             # If on, interpolate and blur
             frame = cv2.resize(frame, (128, 128), interpolation=cv2.INTER_LINEAR)
             frame = cv2.GaussianBlur(frame, (9, 9), 9)
-        else:
-            pass
 
         # Resize the frame
         frame = cv2.resize(frame, (512, 512), interpolation=cv2.INTER_NEAREST)
 
         # Mirror frame if necessary
-        if self.thermal_image_invert:
-            frame = cv2.flip(frame, 1)  # flip the image horizontally
-            frame = cv2.flip(frame, 0)  # flip the image vertically
-        else:
-            pass
+        if self.thermal_image_flip_h:
+            frame = cv2.flip(frame, 0)  # flip the image horizontally
+        if self.thermal_image_flip_v:
+            frame = cv2.flip(frame, 1)  # flip the image vertically
 
         # Apply selected colormap and stamp FPS
         frame = cv2.applyColorMap(frame, self.selected_cmap)
-        cv2.putText(img=frame, text='FPS:{:.1f}'.format(self.fps),
-                    org=(440, 510), fontFace=cv2.FONT_HERSHEY_DUPLEX,
-                    fontScale=0.5, color=(0, 255, 0))
 
-        return frame, [AvgMin, AvgMax, AvgTA]
+        return frame
 
     def load_colormap_files(self, files):
         # Get colormap from files
         # Created using http://jdherman.github.io/colormap/
-
         colormap_list = []
         for rel_file_path in files:
             full_path = os.path.join(os.path.dirname(__file__), os.pardir, rel_file_path)
