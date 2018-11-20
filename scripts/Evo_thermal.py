@@ -39,7 +39,7 @@ class Evo_Thermal(object):
 
         # Get colormap from files
         colormap_files = (
-            "resources/colormap/dev_kit_cmap.txt",
+            "resources/colormap/dave.txt",
             "resources/colormap/ice.txt",
             "resources/colormap/ironbow.txt",
             "resources/colormap/high_contrast.txt",
@@ -222,9 +222,9 @@ class Evo_Thermal(object):
         return config
 
     def reconfigure_color_map(self, config):
-        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Dev:
+        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Dave:
             self.selected_cmap = self.cmap_list[0]
-            rospy.loginfo("Change colormap to Dev format")
+            rospy.loginfo("Change colormap to Dave format")
         elif config["Map"] == Evo_ThermalConfig.Evo_Thermal_Ice:
             self.selected_cmap = self.cmap_list[1]
             rospy.loginfo("Change colormap to Ice format")
