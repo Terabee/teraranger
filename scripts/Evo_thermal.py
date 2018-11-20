@@ -57,7 +57,8 @@ class Evo_Thermal(object):
         self.evo_thermal_cfg_server = Server(Evo_ThermalConfig, self.evo_thermal_callback)
 
         # Reconfigure parameters initialization
-        self.thermal_image_invert = False
+        self.thermal_image_flip_v = False
+        self.thermal_image_flip_h = False
         self.thermal_image_interpolate = False
         self.thermal_image_autoscale = True
         self.manual_min_scaling = 20.0
@@ -217,7 +218,8 @@ class Evo_Thermal(object):
         if level == -1:
             return config
         if level == 0:
-            self.thermal_image_invert = config["thermal_image_invert"]
+            self.thermal_image_flip_h = config["thermal_image_flip_h"]
+            self.thermal_image_flip_v = config["thermal_image_flip_v"]
             self.thermal_image_interpolate = config["thermal_image_interpolate"]
         elif level == 1:
             self.thermal_image_autoscale = config["thermal_image_autoscale"]
