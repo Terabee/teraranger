@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import numpy as np
-import time
 import serial
 import crcmod.predefined
 import threading

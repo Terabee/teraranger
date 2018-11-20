@@ -5,10 +5,8 @@ import numpy as np
 import serial
 import cv2
 import crcmod.predefined
-import serial.tools.list_ports
 import os
 from struct import unpack
-from time import time
 
 import rospy
 from cv_bridge import CvBridge
