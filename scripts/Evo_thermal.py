@@ -64,12 +64,6 @@ class Evo_Thermal(object):
         self.manual_min_scaling = 20.0
         self.manual_max_scaling = 30.0
 
-        # FPS counter init
-        self.fps_frame_count = 0
-        self.fps_window = 30
-        self.last_fps_timestamp = time()
-        self.fps = 0
-
         self.port = serial.Serial(
             port=self.portname,
             baudrate=self.baudrate,
