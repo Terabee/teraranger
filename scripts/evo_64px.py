@@ -48,12 +48,6 @@ class Evo64px(object):
         # Initialize reconfiguration server
         self.evo_64px_cfg_server = Server(Evo64pxConfig, self.evo_64px_cfg_callback)
 
-        # Variables used for fps estimation
-        self.last_fps_timestamp = time.time()
-        self.fps_window = 4
-        self.fps_frame_count = 0
-        self.fps = 30.0
-
         # Configure the serial connections (the parameters differs on the device you are connecting to)
         self.port = serial.Serial(
             port=self.portname,
@@ -124,22 +118,6 @@ class Evo64px(object):
 
     def publish(self, msg):
         self.publisher.publish(msg)
-
-    def compute_fps(self):
-        """
-        This function compute the FPS of the processing
-        """
-        if self.fps_window <= 0:  # Bypass fps computation
-            return
-        if self.fps_frame_count < self.fps_window:
-            self.fps_frame_count += 1
-        else:
-            current_time = time.time()
-            diff = current_time - self.last_fps_timestamp
-            self.last_fps_timestamp = current_time
-
-            self.fps = self.fps_frame_count / diff
-            self.fps_frame_count = 1
 
     def get_depth_array(self):
         '''
@@ -260,7 +238,6 @@ class Evo64px(object):
             img_msg.header.stamp = rospy.Time.now()
 
             self.depth_publisher.publish(img_msg)
-            self.compute_fps()
 
         else:
             self.stop_sensor()
