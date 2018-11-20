@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-import rospy
+from __future__ import division
 import numpy as np
 import serial
 import time
