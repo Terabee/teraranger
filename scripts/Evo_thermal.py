@@ -35,7 +35,6 @@ class Evo_Thermal(object):
         self.cmap_number = 0
         self.minima_list = []
         self.maxima_list = []
-        self.ptat_list = []
 
         # Get colormap from files
         colormap_files = (
@@ -116,26 +115,22 @@ class Evo_Thermal(object):
         return (array / self.scaling) - self.celsius_offset
 
     def auto_scaling(self, data):
-        # Get min/max/ptat for averaging
+        # Get min/maxfor averaging
         frame_min, frame_max = data.min(), data.max()
         self.minima_list.append(frame_min)
         self.maxima_list.append(frame_max)
-        self.ptat_list.append(self.ptat)
 
         # Need at least 10 frames for better average
         if len(self.maxima_list) >= 10:
             avg_max = sum(self.maxima_list) / len(self.maxima_list)
             avg_min = sum(self.minima_list) / len(self.minima_list)
-            avg_ptat = sum(self.ptat_list) / len(self.ptat_list)
             # Delete oldest insertions
-            self.ptat_list.pop(0)
             self.maxima_list.pop(0)
             self.minima_list.pop(0)
         else:
             # Until list fills, use current frame min/max/ptat
             avg_max = frame_max
             avg_min = frame_min
-            avg_ptat = self.ptat
 
         # Scale based on boolean toggled by event #
         if self.thermal_image_autoscale:
