@@ -13,7 +13,7 @@ from time import time
 import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Float64MultiArray, MultiArrayLayout, MultiArrayDimension
 from teraranger.cfg import Evo_ThermalConfig
 from dynamic_reconfigure.server import Server
 
@@ -22,7 +22,8 @@ class Evo_Thermal(object):
     def __init__(self):
         # ROS INIT
         rospy.init_node("evo_thermal")
-        self.img_publisher = rospy.Publisher("evo_thermal/thermal_image", Image, queue_size=1)
+        self.rgb_publisher = rospy.Publisher("evo_thermal/rgb_image", Image, queue_size=1)
+        self.raw_publisher = rospy.Publisher("evo_thermal/raw_temp_array", Float64MultiArray, queue_size=1)
         self.ptat_publisher = rospy.Publisher("evo_thermal/ptat", Float64, queue_size=1)
 
         self.window_size = rospy.get_param("~window_size", 5)
@@ -235,9 +236,29 @@ class Evo_Thermal(object):
         else:
             rospy.logerr("Unknown colormap index")
 
-    def publish(self, msg):
-        self.img_publisher.publish(msg)
-        self.ptat_publisher.publish(self.ptat)
+    def publish(self, rgb, temp_array):
+        # Publish RGB image
+        rgb_img_msg = self.bridge.cv2_to_imgmsg(rgb)
+        rgb_img_msg.header.stamp = rospy.Time.now()
+        self.rgb_publisher.publish(rgb_img_msg)
+
+        # Publish temperatures array
+        raw_temp_array = Float64MultiArray()
+        raw_temp_array.layout.dim.append(MultiArrayDimension())
+        raw_temp_array.layout.dim[0].size = 32
+        raw_temp_array.layout.dim[0].stride = 1
+        raw_temp_array.layout.dim[0].label = "x-axis"
+        raw_temp_array.layout.dim.append(MultiArrayDimension())
+        raw_temp_array.layout.dim[1].size = 32
+        raw_temp_array.layout.dim[1].stride = 1
+        raw_temp_array.layout.dim[1].label = "y-axis"
+        data = np.reshape(temp_array, (1024))
+        np.round(data, 2)
+        raw_temp_array.data = data
+        self.raw_publisher.publish(raw_temp_array)
+
+        # Publish internal sensor temperature
+        self.ptat_publisher.publish(self.ptat/self.scaling - self.celsius_offset)
 
     def send_command(self, command):
         self.port.write(command)
@@ -284,14 +305,10 @@ class Evo_Thermal(object):
         while not rospy.is_shutdown():
             frame = self.get_frame()
             if frame is not None:
-                converted_frame = self.convert_frame(frame)
-                thermal_image = self.auto_scaling(converted_frame)
+                temp_array = self.convert_frame(frame)
+                thermal_image = self.auto_scaling(temp_array)
 
-                # Publishing thermal image
-                img_msg = self.bridge.cv2_to_imgmsg(thermal_image)
-                img_msg.header.stamp = rospy.Time.now()
-
-                self.publish(img_msg)
+                self.publish(thermal_image, temp_array)
         else:
             self.stop_sensor()
             rospy.logwarn("Node shutting down")
