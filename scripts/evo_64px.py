@@ -112,9 +112,11 @@ class Evo64px(object):
         if config["Mode"] == Evo64pxConfig.Evo64px_Close_Range:
             self.send_command("\x00\x21\x01\xBC")
             rospy.loginfo("Changing mode to Close Range")
-        if config["Mode"] == Evo64pxConfig.Evo64px_Fast:
+        elif config["Mode"] == Evo64pxConfig.Evo64px_Fast:
             self.send_command("\x00\x21\x02\xB5")
             rospy.loginfo("Changing mode to Fast")
+        else:
+            rospy.logerr("Unknown sensor mode")
 
     def publish(self, msg):
         self.publisher.publish(msg)
@@ -188,16 +190,29 @@ class Evo64px(object):
                 return False
 
     def start_sensor(self):
-        if self.send_command("\x00\x52\x02\x01\xDF"):
+        rospy.loginfo("Starting sensor...")
+        res = self.send_command("\x00\x52\x02\x01\xDF")
+        if res:
             rospy.loginfo("Sensor started successfully")
+            return True
+        else:
+            rospy.logerr("Failed to start sensor")
+            return False
 
     def stop_sensor(self):
-        if self.send_command("\x00\x52\x02\x00\xD8"):
+        rospy.loginfo("Stopping sensor...")
+        res = self.send_command("\x00\x52\x02\x00\xD8")
+        if res:
             rospy.loginfo("Sensor stopped successfully")
+            return True
+        else:
+            rospy.logerr("Failed to stop sensor")
+            return False
 
     def run(self):
         self.port.flushInput()
-        self.start_sensor()
+        if not self.start_sensor():
+            return
 
         while not rospy.is_shutdown():
             depth_array = self.get_depth_array()
