@@ -14,12 +14,11 @@ from sensor_msgs.msg import PointCloud2, Image
 from sensor_msgs import point_cloud2
 from std_msgs.msg import Header
 
-from teraranger.cfg import Evo_64pxConfig
+from teraranger.cfg import Evo64pxConfig
 from dynamic_reconfigure.server import Server
 
 
-class Evo_64px(object):
-
+class Evo64px(object):
     def __init__(self):
         # ROS initialisation
         rospy.init_node("evo_64px")
@@ -47,7 +46,7 @@ class Evo_64px(object):
         self.width = 8
 
         # Initialize reconfiguration server
-        self.evo_64px_cfg_server = Server(Evo_64pxConfig, self.evo_64px_cfg_callback)
+        self.evo_64px_cfg_server = Server(Evo64pxConfig, self.evo_64px_cfg_callback)
 
         # Variables used for fps estimation
         self.last_fps_timestamp = time.time()
@@ -93,7 +92,7 @@ class Evo_64px(object):
         return output_cloud
 
     def evo_64px_cfg_callback(self, config, level):
-        rospy.logdebug("Evo_64px parameters reconfigure request".format(**config))
+        rospy.logdebug("Evo 64px parameters reconfigure request".format(**config))
         if level == -1:
             return config
         elif level == 0:
@@ -116,10 +115,10 @@ class Evo_64px(object):
         return config
 
     def reconfigure_mode(self, config):
-        if config["Mode"] == Evo_64pxConfig.Evo_64px_Close_Range:
+        if config["Mode"] == Evo64pxConfig.Evo64px_Close_Range:
             self.send_command("\x00\x21\x01\xBC")
             rospy.loginfo("Changing mode to Close Range")
-        if config["Mode"] == Evo_64pxConfig.Evo_64px_Fast:
+        if config["Mode"] == Evo64pxConfig.Evo64px_Fast:
             self.send_command("\x00\x21\x02\xB5")
             rospy.loginfo("Changing mode to Fast")
 
@@ -269,7 +268,7 @@ class Evo_64px(object):
 
 
 if __name__ == '__main__':
-    evo_64px = Evo_64px()
+    evo_64px = Evo64px()
     try:
         evo_64px.run()
     except rospy.ROSInterruptException:

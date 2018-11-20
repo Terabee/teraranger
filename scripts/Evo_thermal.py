@@ -14,11 +14,11 @@ import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float64, Float64MultiArray, MultiArrayLayout, MultiArrayDimension
-from teraranger.cfg import Evo_ThermalConfig
+from teraranger.cfg import EvoThermalConfig
 from dynamic_reconfigure.server import Server
 
 
-class Evo_Thermal(object):
+class EvoThermal(object):
     def __init__(self):
         # ROS INIT
         rospy.init_node("evo_thermal")
@@ -56,7 +56,7 @@ class Evo_Thermal(object):
         self.celsius_offset = 273.15
 
         # Initialize reconfiguration server
-        self.evo_thermal_cfg_server = Server(Evo_ThermalConfig, self.evo_thermal_callback)
+        self.evo_thermal_cfg_server = Server(EvoThermalConfig, self.evo_thermal_callback)
 
         # Reconfigure parameters initialization
         self.thermal_image_flip_v = False
@@ -154,7 +154,7 @@ class Evo_Thermal(object):
         if self.thermal_image_interpolate:
             # If on, interpolate and blur
             frame = cv2.resize(frame, (128, 128), interpolation=cv2.INTER_LINEAR)
-            frame = cv2.GaussianBlur(frame, (9, 9), 9)
+            #frame = cv2.GaussianBlur(frame, (9, 9), 9)
 
         # Resize the frame
         frame = cv2.resize(frame, (512, 512), interpolation=cv2.INTER_NEAREST)
@@ -195,7 +195,7 @@ class Evo_Thermal(object):
         return colormap_list
 
     def evo_thermal_callback(self, config, level):
-        rospy.logdebug("Evo_Thermal parameters reconfigure request".format(**config))
+        rospy.logdebug("Evo Thermal parameters reconfigure request".format(**config))
         if level == -1:
             return config
         if level == 0:
@@ -218,19 +218,19 @@ class Evo_Thermal(object):
         return config
 
     def reconfigure_color_map(self, config):
-        if config["Map"] == Evo_ThermalConfig.Evo_Thermal_Dave:
+        if config["Map"] == EvoThermalConfig.EvoThermal_Dave:
             self.selected_cmap = self.cmap_list[0]
             rospy.loginfo("Change colormap to Dave format")
-        elif config["Map"] == Evo_ThermalConfig.Evo_Thermal_Ice:
+        elif config["Map"] == EvoThermalConfig.EvoThermal_Ice:
             self.selected_cmap = self.cmap_list[1]
             rospy.loginfo("Change colormap to Ice format")
-        elif config["Map"] == Evo_ThermalConfig.Evo_Thermal_Ironbow:
+        elif config["Map"] == EvoThermalConfig.EvoThermal_Ironbow:
             self.selected_cmap = self.cmap_list[2]
             rospy.loginfo("Change colormap to Ironbow format")
-        elif config["Map"] == Evo_ThermalConfig.Evo_Thermal_High_contrast:
+        elif config["Map"] == EvoThermalConfig.EvoThermal_High_contrast:
             self.selected_cmap = self.cmap_list[3]
             rospy.loginfo("Change colormap to High Contrast format")
-        elif config["Map"] == Evo_ThermalConfig.Evo_Thermal_Whot:
+        elif config["Map"] == EvoThermalConfig.EvoThermal_Whot:
             self.selected_cmap = self.cmap_list[4]
             rospy.loginfo("Change colormap to White Hot format")
         else:
@@ -315,7 +315,7 @@ class Evo_Thermal(object):
 
 
 if __name__ == "__main__":
-    evo_thermal = Evo_Thermal()
+    evo_thermal = EvoThermal()
     try:
         evo_thermal.run()
     except rospy.ROSInterruptException:
