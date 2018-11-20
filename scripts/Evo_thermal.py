@@ -3,16 +3,17 @@
 from __future__ import division
 import numpy as np
 import serial
-import time
-from struct import unpack
 import cv2
-from cv_bridge import CvBridge
-from time import time
-from sensor_msgs.msg import Image
 import crcmod.predefined
 import serial.tools.list_ports
 import os
+from struct import unpack
+from time import time
 
+import rospy
+from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
+from std_msgs.msg import Float64
 from teraranger.cfg import Evo_ThermalConfig
 from dynamic_reconfigure.server import Server
 
@@ -21,7 +22,8 @@ class Evo_Thermal(object):
     def __init__(self):
         # ROS INIT
         rospy.init_node("evo_thermal")
-        self.publisher = rospy.Publisher("evo_thermal/thermal_image", Image, queue_size=1)
+        self.img_publisher = rospy.Publisher("evo_thermal/thermal_image", Image, queue_size=1)
+        self.ptat_publisher = rospy.Publisher("evo_thermal/ptat", Float64, queue_size=1)
 
         self.window_size = rospy.get_param("~window_size", 5)
         self.portname = rospy.get_param("~portname", "/dev/ttyACM0")
@@ -100,14 +102,13 @@ class Evo_Thermal(object):
                 if calculatedCRC == receivedCRC:
                     got_frame = True
                 else:
-                    print "Bad CRC"
+                    rospy.logwarn("Bad CRC")
                     return None
             # This prevents hanging in this function
             else:
                 return None
 
         self.port.flushInput()
-
         return data
 
     def convert_frame(self, array):
@@ -240,7 +241,8 @@ class Evo_Thermal(object):
             rospy.logerr("Unknown colormap index")
 
     def publish(self, msg):
-        self.publisher.publish(msg)
+        self.img_publisher.publish(msg)
+        self.ptat_publisher.publish(self.ptat)
 
     def send_command(self, command):
         self.port.write(command)
@@ -288,14 +290,13 @@ class Evo_Thermal(object):
             frame = self.get_frame()
             if frame is not None:
                 converted_frame = self.convert_frame(frame)
-                thermal_image, averages = self.auto_scaling(converted_frame)
+                thermal_image = self.auto_scaling(converted_frame)
 
                 # Publishing thermal image
                 img_msg = self.bridge.cv2_to_imgmsg(thermal_image)
                 img_msg.header.stamp = rospy.Time.now()
 
-                self.publisher.publish(img_msg)
-
+                self.publish(img_msg)
         else:
             self.stop_sensor()
             rospy.logwarn("Node shutting down")
