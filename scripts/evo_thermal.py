@@ -111,7 +111,15 @@ class EvoThermal(object):
 
     def convert_frame(self, array):
         # Data is sent in dK, need to convert to celsius
-        return (array / self.scaling) - self.celsius_offset
+        array = (array / self.scaling) - self.celsius_offset
+
+        # Mirror frame if necessary
+        if self.thermal_image_flip_h:
+            array = np.flip(array, 0)  # flip the image horizontally
+        if self.thermal_image_flip_v:
+            array = np.flip(array, 1)  # flip the image vertically
+
+        return array
 
     def auto_scaling(self, data):
         # Get min/maxfor averaging
@@ -156,12 +164,6 @@ class EvoThermal(object):
 
         # Resize the frame
         frame = cv2.resize(frame, (512, 512), interpolation=cv2.INTER_NEAREST)
-
-        # Mirror frame if necessary
-        if self.thermal_image_flip_h:
-            frame = cv2.flip(frame, 0)  # flip the image horizontally
-        if self.thermal_image_flip_v:
-            frame = cv2.flip(frame, 1)  # flip the image vertically
 
         # Apply selected colormap and stamp FPS
         frame = cv2.applyColorMap(frame, self.selected_cmap)
