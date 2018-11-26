@@ -81,17 +81,25 @@ class EvoThermal(object):
         got_frame = False
         while not got_frame:
             # Polls for header
-            header = self.port.read(2)
-            # This prevents hanging in this function
-            if len(header) < 2:
+            temp = self.port.read(2)
+            got_header = False
+            while not got_header:
+                if len(temp) < 2:  # Check for serial timeout
+                    return None
+                if ord(temp[0]) == 13 and ord(temp[1]) == 0:
+                    got_header = True
+                else:
+                    temp = temp[1:]
+                    temp += self.port.read(1)
+
+            # Header received, now read rest of frame
+            data = self.port.read(2068)
+            if len(data) < 2068:  # Check for serial timeout
                 return None
-            header = unpack('H', str(header))
-            if header[0] == 13:
-                # Header received, now read rest of frame
-                data = self.port.read(2068)
-                # Calculate CRC for frame (except CRC value and header)
-                calculatedCRC = self.crc32(data[:2064])
-                data = unpack("H" * 1034, str(data))
+
+            # Calculate CRC for frame (except CRC value and header)
+            calculatedCRC = self.crc32(data[:2064])
+            data = unpack("H" * 1034, str(data))
                 receivedCRC = (data[1032] & 0xFFFF) << 16
                 receivedCRC |= data[1033] & 0xFFFF
                 self.ptat = data[1024]
@@ -100,11 +108,8 @@ class EvoThermal(object):
                 # Compare calculated CRC to received CRC
                 if calculatedCRC == receivedCRC:
                     got_frame = True
-                else:
-                    rospy.logwarn("Bad CRC")
-                    return None
-            # This prevents hanging in this function
             else:
+                rospy.logwarn("Bad CRC")
                 return None
 
         self.port.flushInput()
