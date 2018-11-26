@@ -75,6 +75,7 @@ class EvoThermal(object):
 
         self.port.isOpen()
         self.crc32 = crcmod.predefined.mkPredefinedCrcFun('crc-32-mpeg')
+        self.crc8 = crcmod.predefined.mkPredefinedCrcFun('crc-8')
 
     def get_frame(self):
         got_frame = False
@@ -261,16 +262,25 @@ class EvoThermal(object):
         self.ptat_publisher.publish(self.ptat/self.scaling - self.celsius_offset)
 
     def send_command(self, command):
+        self.port.flushInput()
         self.port.write(command)
-        ack = self.port.read(1)
-        # This loop discards buffered frames until an ACK header is reached
-        while ord(ack) != 20:
-            ack = self.port.read(1)
-        else:
-            ack += self.port.read(3)
+
+        # This loop discards buffered frames until a valid ACK frame is reached
+        temp_ack = self.port.read(4)
+        got_ack = False
+        while not got_ack:
+            if len(temp_ack) < 4:  # Check for serial timeout
+                rospy.logwarn("Timeout when reading ACK")
+                return False
+            if ord(temp_ack[0]) == 20:
+                if self.crc8(temp_ack[:3]) == ord(temp_ack[3]):
+                    got_ack = True
+                    break
+            temp_ack = temp_ack[1:]
+            temp_ack += self.port.read(1)
 
         # Check if ACK or NACK
-        if ord(ack[2]) == 0:
+        if ord(temp_ack[2]) == 0:
             return True
         else:
             rospy.logerr("Command not acknowledged")
