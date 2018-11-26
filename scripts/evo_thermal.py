@@ -298,6 +298,7 @@ class EvoThermal(object):
 
     def run(self):
         self.port.flushInput()
+        if self.baudrate == 115200:  # Sending VCP start when connected via USB
         if not self.start_sensor():
             return
 
@@ -309,6 +310,7 @@ class EvoThermal(object):
 
                 self.publish(thermal_image, temp_array)
         else:
+            if self.baudrate == 115200:  # Sending VCP stop when connected via USB
             self.stop_sensor()
             rospy.logwarn("Node shutting down")
 

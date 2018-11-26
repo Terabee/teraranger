@@ -210,8 +210,9 @@ class Evo64px(object):
 
     def run(self):
         self.port.flushInput()
-        if not self.start_sensor():
-            return
+        if self.baudrate == 115200: # Sending VCP start when connected via USB
+            if not self.start_sensor():
+                return
 
         while not rospy.is_shutdown():
             depth_array = self.get_depth_array()
@@ -254,7 +255,8 @@ class Evo64px(object):
             self.depth_publisher.publish(img_msg)
 
         else:
-            self.stop_sensor()
+            if self.baudrate == 115200:
+                self.stop_sensor()  # Sending VCP stop when connected via USB
             rospy.logwarn("Node shutting down")
 
 
