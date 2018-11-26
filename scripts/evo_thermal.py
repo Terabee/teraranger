@@ -265,7 +265,6 @@ class EvoThermal(object):
         ack = self.port.read(1)
         # This loop discards buffered frames until an ACK header is reached
         while ord(ack) != 20:
-            self.port.read()
             ack = self.port.read(1)
         else:
             ack += self.port.read(3)
