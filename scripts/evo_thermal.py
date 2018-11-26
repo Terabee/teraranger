@@ -70,7 +70,7 @@ class EvoThermal(object):
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
-            timeout=0.1
+            timeout=1.0
         )
 
         self.port.isOpen()
@@ -100,14 +100,14 @@ class EvoThermal(object):
             # Calculate CRC for frame (except CRC value and header)
             calculatedCRC = self.crc32(data[:2064])
             data = unpack("H" * 1034, str(data))
-                receivedCRC = (data[1032] & 0xFFFF) << 16
-                receivedCRC |= data[1033] & 0xFFFF
-                self.ptat = data[1024]
-                data = data[:1024]
-                data = np.reshape(data, (32, 32))
-                # Compare calculated CRC to received CRC
-                if calculatedCRC == receivedCRC:
-                    got_frame = True
+            receivedCRC = (data[1032] & 0xFFFF) << 16
+            receivedCRC |= data[1033] & 0xFFFF
+            self.ptat = data[1024]
+            data = data[:1024]
+            data = np.reshape(data, (32, 32))
+            # Compare calculated CRC to received CRC
+            if calculatedCRC == receivedCRC:
+                got_frame = True
             else:
                 rospy.logwarn("Bad CRC")
                 return None
@@ -314,8 +314,8 @@ class EvoThermal(object):
     def run(self):
         self.port.flushInput()
         if self.baudrate == 115200:  # Sending VCP start when connected via USB
-        if not self.start_sensor():
-            return
+            if not self.start_sensor():
+                return
 
         while not rospy.is_shutdown():
             frame = self.get_frame()
@@ -326,7 +326,7 @@ class EvoThermal(object):
                 self.publish(thermal_image, temp_array)
         else:
             if self.baudrate == 115200:  # Sending VCP stop when connected via USB
-            self.stop_sensor()
+                self.stop_sensor()
             rospy.logwarn("Node shutting down")
 
 
