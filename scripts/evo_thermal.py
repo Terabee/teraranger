@@ -226,19 +226,19 @@ class EvoThermal(object):
     def reconfigure_color_map(self, config):
         if config["Map"] == EvoThermalConfig.EvoThermal_Dave:
             self.selected_cmap = self.cmap_list[0]
-            rospy.loginfo("Change colormap to Dave format")
+            rospy.loginfo("Changed colormap to Dave")
         elif config["Map"] == EvoThermalConfig.EvoThermal_Ice:
             self.selected_cmap = self.cmap_list[1]
-            rospy.loginfo("Change colormap to Ice format")
+            rospy.loginfo("Changed colormap to Ice")
         elif config["Map"] == EvoThermalConfig.EvoThermal_Ironbow:
             self.selected_cmap = self.cmap_list[2]
-            rospy.loginfo("Change colormap to Ironbow format")
+            rospy.loginfo("Changed colormap to Ironbow")
         elif config["Map"] == EvoThermalConfig.EvoThermal_High_contrast:
             self.selected_cmap = self.cmap_list[3]
-            rospy.loginfo("Change colormap to High Contrast format")
+            rospy.loginfo("Changed colormap to High Contrast")
         elif config["Map"] == EvoThermalConfig.EvoThermal_Whot:
             self.selected_cmap = self.cmap_list[4]
-            rospy.loginfo("Change colormap to White Hot format")
+            rospy.loginfo("Changed colormap to White Hot")
         else:
             rospy.logerr("Unknown colormap index")
 
