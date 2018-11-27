@@ -27,7 +27,7 @@ class Evo64px(object):
                                                queue_size=1)
         self.window_size = rospy.get_param("~window_size", 5)
         self.portname = rospy.get_param("~portname", "/dev/ttyACM0")
-        self.baudrate = rospy.get_param("~baudrate", "115200")
+        self.baudrate = rospy.get_param("~baudrate", 115200)
         self.evo_64px_frame = "evo_64px_frame"
         self.bridge = CvBridge()
 
