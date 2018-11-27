@@ -20,9 +20,9 @@ class EvoThermal(object):
     def __init__(self):
         # ROS INIT
         rospy.init_node("evo_thermal")
-        self.rgb_publisher = rospy.Publisher("evo_thermal/rgb_image", Image, queue_size=1)
-        self.raw_publisher = rospy.Publisher("evo_thermal/raw_temp_array", Float64MultiArray, queue_size=1)
-        self.ptat_publisher = rospy.Publisher("evo_thermal/ptat", Float64, queue_size=1)
+        self.rgb_publisher = rospy.Publisher("teraranger_evo_thermal/rgb_image", Image, queue_size=1)
+        self.raw_publisher = rospy.Publisher("teraranger_evo_thermal/raw_temp_array", Float64MultiArray, queue_size=1)
+        self.ptat_publisher = rospy.Publisher("teraranger_evo_thermal/ptat", Float64, queue_size=1)
 
         self.window_size = rospy.get_param("~window_size", 5)
         self.portname = rospy.get_param("~portname", "/dev/ttyACM0")
