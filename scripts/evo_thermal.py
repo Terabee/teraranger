@@ -245,6 +245,7 @@ class EvoThermal(object):
     def publish(self, rgb, temp_array):
         # Publish RGB image
         rgb_img_msg = self.bridge.cv2_to_imgmsg(rgb)
+        rgb_img_msg.header.frame_id = self.evo_thermal_frame
         rgb_img_msg.header.stamp = rospy.Time.now()
         self.rgb_publisher.publish(rgb_img_msg)
 
