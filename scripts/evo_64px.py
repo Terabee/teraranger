@@ -135,7 +135,7 @@ class Evo64px(object):
                     for i in range(1, 65):
                         rng = ord(frame[2 * i - 1]) << 7
                         rng = rng | (ord(frame[2 * i]) & 0x7F)
-                        dec_out.append(rng & 0x0FFF)
+                        dec_out.append(rng & 0x3FFF)
                     depth_array = [dec_out[i:i + 8] for i in range(0, len(dec_out), 8)]
                     depth_array = np.array(depth_array)
                     got_frame = True
