@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import numpy as np
-import time
 import serial
 import crcmod.predefined
 import threading
@@ -14,12 +13,11 @@ from sensor_msgs.msg import PointCloud2, Image
 from sensor_msgs import point_cloud2
 from std_msgs.msg import Header
 
-from teraranger.cfg import Evo_64pxConfig
+from teraranger.cfg import Evo64pxConfig
 from dynamic_reconfigure.server import Server
 
 
-class Evo_64px(object):
-
+class Evo64px(object):
     def __init__(self):
         # ROS initialisation
         rospy.init_node("evo_64px")
@@ -29,7 +27,7 @@ class Evo_64px(object):
                                                queue_size=1)
         self.window_size = rospy.get_param("~window_size", 5)
         self.portname = rospy.get_param("~portname", "/dev/ttyACM0")
-        self.baudrate = rospy.get_param("~baudrate", "115200")
+        self.baudrate = rospy.get_param("~baudrate", 115200)
         self.evo_64px_frame = "evo_64px_frame"
         self.bridge = CvBridge()
 
@@ -47,13 +45,7 @@ class Evo_64px(object):
         self.width = 8
 
         # Initialize reconfiguration server
-        self.evo_64px_cfg_server = Server(Evo_64pxConfig, self.evo_64px_cfg_callback)
-
-        # Variables used for fps estimation
-        self.last_fps_timestamp = time.time()
-        self.fps_window = 4
-        self.fps_frame_count = 0
-        self.fps = 30.0
+        self.evo_64px_cfg_server = Server(Evo64pxConfig, self.evo_64px_cfg_callback)
 
         # Configure the serial connections (the parameters differs on the device you are connecting to)
         self.port = serial.Serial(
@@ -93,7 +85,7 @@ class Evo_64px(object):
         return output_cloud
 
     def evo_64px_cfg_callback(self, config, level):
-        rospy.logdebug("Evo_64px parameters reconfigure request".format(**config))
+        rospy.logdebug("Evo 64px parameters reconfigure request".format(**config))
         if level == -1:
             return config
         elif level == 0:
@@ -116,31 +108,17 @@ class Evo_64px(object):
         return config
 
     def reconfigure_mode(self, config):
-        if config["Mode"] == Evo_64pxConfig.Evo_64px_Close_Range:
+        if config["Mode"] == Evo64pxConfig.Evo64px_Close_Range:
             self.send_command("\x00\x21\x01\xBC")
             rospy.loginfo("Changing mode to Close Range")
-        if config["Mode"] == Evo_64pxConfig.Evo_64px_Fast:
+        elif config["Mode"] == Evo64pxConfig.Evo64px_Fast:
             self.send_command("\x00\x21\x02\xB5")
             rospy.loginfo("Changing mode to Fast")
+        else:
+            rospy.logerr("Unknown sensor mode")
 
     def publish(self, msg):
         self.publisher.publish(msg)
-
-    def compute_fps(self):
-        """
-        This function compute the FPS of the processing
-        """
-        if self.fps_window <= 0:  # Bypass fps computation
-            return
-        if self.fps_frame_count < self.fps_window:
-            self.fps_frame_count += 1
-        else:
-            current_time = time.time()
-            diff = current_time - self.last_fps_timestamp
-            self.last_fps_timestamp = current_time
-
-            self.fps = self.fps_frame_count / diff
-            self.fps_frame_count = 1
 
     def get_depth_array(self):
         '''
@@ -157,7 +135,7 @@ class Evo_64px(object):
                     for i in range(1, 65):
                         rng = ord(frame[2 * i - 1]) << 7
                         rng = rng | (ord(frame[2 * i]) & 0x7F)
-                        dec_out.append(rng & 0x0FFF)
+                        dec_out.append(rng & 0x3FFF)
                     depth_array = [dec_out[i:i + 8] for i in range(0, len(dec_out), 8)]
                     depth_array = np.array(depth_array)
                     got_frame = True
@@ -211,16 +189,30 @@ class Evo_64px(object):
                 return False
 
     def start_sensor(self):
-        if self.send_command("\x00\x52\x02\x01\xDF"):
+        rospy.loginfo("Starting sensor...")
+        res = self.send_command("\x00\x52\x02\x01\xDF")
+        if res:
             rospy.loginfo("Sensor started successfully")
+            return True
+        else:
+            rospy.logerr("Failed to start sensor")
+            return False
 
     def stop_sensor(self):
-        if self.send_command("\x00\x52\x02\x00\xD8"):
+        rospy.loginfo("Stopping sensor...")
+        res = self.send_command("\x00\x52\x02\x00\xD8")
+        if res:
             rospy.loginfo("Sensor stopped successfully")
+            return True
+        else:
+            rospy.logerr("Failed to stop sensor")
+            return False
 
     def run(self):
         self.port.flushInput()
-        self.start_sensor()
+        if self.baudrate == 115200: # Sending VCP start when connected via USB
+            if not self.start_sensor():
+                return
 
         while not rospy.is_shutdown():
             depth_array = self.get_depth_array()
@@ -261,15 +253,15 @@ class Evo_64px(object):
             img_msg.header.stamp = rospy.Time.now()
 
             self.depth_publisher.publish(img_msg)
-            self.compute_fps()
 
         else:
-            self.stop_sensor()
+            if self.baudrate == 115200:
+                self.stop_sensor()  # Sending VCP stop when connected via USB
             rospy.logwarn("Node shutting down")
 
 
 if __name__ == '__main__':
-    evo_64px = Evo_64px()
+    evo_64px = Evo64px()
     try:
         evo_64px.run()
     except rospy.ROSInterruptException:
