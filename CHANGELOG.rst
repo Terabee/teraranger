@@ -2,6 +2,27 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update roswiki and Readme file for Evo Thermal
+* Fix error in Evo64 px parsing
+* Add frame_id in rgb image message
+* Change topic naming
+* Fix rosparam default value type
+* Prevent header desynchronization in Thermal driver
+* Add CRC check to ACK reading
+* Prevent node from sending VCP commands to UART backboard
+  Based on baudrate speed
+* Refactor Evo 64px driver
+* Remove fps estimation in Evo 64px driver
+* Rename python node file
+* Publish temperature array
+* Add publisher for PTAT
+* Take into account cases when commands are failing
+* Refactor colormap loading
+* Add Evo Thermal driver
+* Contributors: Baptiste Potier, Pierre-Louis Kabaradjian
+
 1.3.0 (2018-10-08)
 ------------------
 * Update maintainer list
