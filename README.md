@@ -152,8 +152,8 @@ where <sensor_name> is the name of your sensor (e.g. one, evo).
 | Information |
 | -------------- |
 |[Product page Evo Thermal 33/90](https://www.terabee.com/portfolio-item/teraranger-evo-thermal/)|
-|[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-evo-thermal-Specification-sheet.pdf)|
-|[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
+|[Specification sheet](https://www.terabee.com/wp-content/uploads/2018/12/TeraRanger-Evo-Thermal-Specification-Sheet.pdf)|
+|[Online shop](http://www.teraranger.com/product/teraranger-evo-thermal/)|
 
 ### TeraRanger Evo 64px
 
