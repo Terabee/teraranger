@@ -67,6 +67,7 @@ rosrun teraranger evo_thermal.py _portname:=/dev/ttyACM0
 This node is publishing on two topics:
 * /teraranger_evo_thermal/rgb_image: a color mapped RGB image based on thermal data
 * /teraranger_evo_thermal/raw_temp_array: an array of 1024 raw thermal data
+* /teraranger_evo_thermal/ptat: internal temperature of the sensor
 
 ## Running the TeraRanger Evo 64px
 
@@ -146,7 +147,7 @@ where <sensor_name> is the name of your sensor (e.g. one, evo).
 
 ### TeraRanger Evo Thermal 33/90
 
-<img src="https://photos.google.com/share/AF1QipOYdeC4x-EdzJ6AQYzsoQh-thWK2I-Bq4wE_AY5M7RHHoIyxwzUrSTrxFHlboQARA/photo/AF1QipPpkqInEvJcJcERLzCpEgdThEuPcYzeMAZREUrD?key=NUNVS0dHVHVXczNBSlM4UldmSEgtcEZobzdKNEJB" width="300"/>
+<img src="https://www.terabee.com/wp-content/uploads/2018/12/Evo-thermaldiagonal-with-labels.jpg" width="300"/>
 
 | Information |
 | -------------- |
