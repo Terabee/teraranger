@@ -2,8 +2,8 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.0 (2018-12-06)
+------------------
 * Update roswiki and Readme file for Evo Thermal
 * Fix error in Evo64 px parsing
 * Add frame_id in rgb image message
