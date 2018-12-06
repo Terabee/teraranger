@@ -147,7 +147,7 @@ where <sensor_name> is the name of your sensor (e.g. one, evo).
 
 ### TeraRanger Evo Thermal 33/90
 
-<img src="https://www.terabee.com/wp-content/uploads/2018/12/Evo-thermaldiagonal-with-labels.jpg" width="300"/>
+<img src="https://www.terabee.com/wp-content/uploads/2018/12/Evo-thermaldiagonal-with-labels.jpg" width="500"/>
 
 | Information |
 | -------------- |
