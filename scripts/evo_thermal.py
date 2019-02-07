@@ -322,7 +322,7 @@ class EvoThermal(object):
             frame = self.get_frame()
             if frame is not None:
                 temp_array = self.convert_frame(frame)
-                thermal_image = self.auto_scaling(temp_array)
+                thermal_image = self.auto_scaling(np.copy(temp_array))
 
                 self.publish(thermal_image, temp_array)
         else:
