@@ -2,8 +2,8 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.1 (2019-02-11)
+------------------
 * Prevent unintended modification on temp_array when clipping values
 * Contributors: Marcin Pilch, Pierre-Louis Kabaradjian
 
