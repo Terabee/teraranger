@@ -190,6 +190,12 @@ class Evo64px(object):
 
     def start_sensor(self):
         rospy.loginfo("Starting sensor...")
+        res = self.send_command("\x00\x11\x03\x4B")
+        if res:
+            rospy.loginfo("Activated distance and ambient mode")
+        else:
+            rospy.logerr("Failed to activate distance and ambient mode")
+
         res = self.send_command("\x00\x52\x02\x01\xDF")
         if res:
             rospy.loginfo("Sensor started successfully")
