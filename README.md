@@ -1,4 +1,5 @@
-# ROS package for TeraRanger modules
+# ROS package for TeraRanger modules  
+[![Build Status](https://travis-ci.org/Terabee/teraranger.svg?branch=master)](https://travis-ci.org/Terabee/teraranger)
 
  This package is a collection of nodes for TeraRanger single sensor modules.
 
