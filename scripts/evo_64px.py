@@ -182,36 +182,37 @@ class Evo64px(object):
                 if ord(ack[2]) == 0:
                     return True
                 else:
-                    print "Command not acknowledged"
+                    rospy.logerr("Command refused by device")
                     return False
             else:
-                print "Error in ACK checksum"
+                rospy.logerr("Invalid sensor answer to command")
                 return False
 
     def start_sensor(self):
-        rospy.loginfo("Starting sensor...")
+        rospy.loginfo("Configuring sensor...")
         res = self.send_command("\x00\x11\x03\x4B")
         if res:
-            rospy.loginfo("Activated distance and ambient mode")
+            rospy.loginfo("Distance and ambient mode activated successfully")
         else:
             rospy.logerr("Failed to activate distance and ambient mode")
 
+        rospy.loginfo("Starting sensor output...")
         res = self.send_command("\x00\x52\x02\x01\xDF")
         if res:
-            rospy.loginfo("Sensor started successfully")
+            rospy.loginfo("Sensor output started successfully")
             return True
         else:
-            rospy.logerr("Failed to start sensor")
+            rospy.logerr("Failed to start sensor output")
             return False
 
     def stop_sensor(self):
-        rospy.loginfo("Stopping sensor...")
+        rospy.loginfo("Stopping sensor output ...")
         res = self.send_command("\x00\x52\x02\x00\xD8")
         if res:
-            rospy.loginfo("Sensor stopped successfully")
+            rospy.loginfo("Sensor output stopped successfully")
             return True
         else:
-            rospy.logerr("Failed to stop sensor")
+            rospy.logerr("Failed to stop sensor output")
             return False
 
     def run(self):
