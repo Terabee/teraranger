@@ -129,7 +129,7 @@ class Evo64px(object):
         while not got_frame:
             with self.serial_lock:
                 frame = self.port.readline()
-            if len(frame) == 269:
+            if len(frame) in (269, 141):
                 if ord(frame[0]) == 0x11 and self.crc_check(frame):  # Check for range frame header and crc
                     dec_out = []
                     for i in range(1, 65):
