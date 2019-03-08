@@ -115,7 +115,8 @@ class EvoThermal(object):
         self.port.flushInput()
         return data
 
-    def convert_frame(self, array):
+    def convert_frame(self, input_frame):
+        array = np.copy(input_frame)
         # Data is sent in dK, need to convert to celsius
         array = (array / self.scaling) - self.celsius_offset
 
@@ -127,7 +128,9 @@ class EvoThermal(object):
 
         return array
 
-    def auto_scaling(self, data):
+    def auto_scaling(self, input_frame):
+        data = np.copy(input_frame)
+
         # Get min/maxfor averaging
         frame_min, frame_max = data.min(), data.max()
         self.minima_list.append(frame_min)

@@ -2,6 +2,11 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.1 (2019-02-11)
+------------------
+* Prevent unintended modification on temp_array when clipping values
+* Contributors: Marcin Pilch, Pierre-Louis Kabaradjian
+
 2.0.0 (2018-12-06)
 ------------------
 * Update roswiki and Readme file for Evo Thermal
