@@ -1,18 +1,18 @@
 services:
   - docker
 
+language: 
+  - cpp
+
 compiler:
-- gcc
+  - gcc
 
 notifications:
   email:
-  on_success: always
-  on_failure: always
+    on_success: always
+    on_failure: always
     recipients:
       - plk@terabee.com
-
-git:
-  quiet: true # optional, silences the cloning of the target repository
 
 # configure the build environment(s)
 # https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#variables-you-can-configure
@@ -36,4 +36,4 @@ matrix:
 install:
   - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .ci_config
 script:
-- source .ci_config/travis.sh
+  - source .ci_config/travis.sh
