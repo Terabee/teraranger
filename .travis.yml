@@ -21,18 +21,8 @@ env:
     - ROS_REPO=ros
   matrix: # each line is a job
     - ROS_DISTRO="indigo"
-    - ROS_DISTRO="indigo" PRERELEASE=true
     - ROS_DISTRO="kinetic"
-    - ROS_DISTRO="kinetic" PRERELEASE=true
     - ROS_DISTRO="melodic"
-    - ROS_DISTRO="melodic" PRERELEASE=true
-
-# allow failures, e.g. for unsupported distros
-matrix:
-  allow_failures:
-    - env: ROS_DISTRO="indigo" ROS_REPO=ros-shadow-fixed
-    - env: ROS_DISTRO="kinetic" ROS_REPO=ros-shadow-fixed
-    - env: ROS_DISTRO="melodic" ROS_REPO=ros-shadow-fixed
 
 # clone and run industrial_ci
 install:
