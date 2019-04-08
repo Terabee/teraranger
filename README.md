@@ -3,14 +3,15 @@
 
  This package is a collection of nodes for TeraRanger single sensor modules.
 
- * [TeraRanger Evo Thermal 33/90](https://www.terabee.com/portfolio-item/teraranger-evo-thermal/)
- * [TeraRanger Evo 64px](https://www.terabee.com/portfolio-item/teraranger-evo-64px-multi-pixel-time-of-flight-sensor/)
- * [TeraRanger Evo 60m](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/)
- * [TeraRanger Evo 600Hz](https://www.terabee.com/portfolio-item/teraranger-evo-600hz/)
- * [TeraRanger Evo 3m](https://www.terabee.com/portfolio-item/teraranger-evo-3m/)
- * [TeraRanger One](https://www.terabee.com/portfolio-item/teraranger-one/)
- * [TeraRanger Duo](https://www.terabee.com/portfolio-item/teraranger-duo/)
 
+ * [TeraRanger Evo Thermal 33/90](https://www.terabee.com/sensors-modules/thermal-cameras/)
+ * [TeraRanger Evo 64px](https://www.terabee.com/shop/3d-tof-cameras/teraranger-evo-64px/)
+ * [TeraRanger Evo 60m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-60m/)
+ * [TeraRanger Evo 600Hz](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-600hz/)
+ * [TeraRanger Evo 3m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-3m/)
+ * [TeraRanger One](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-one/)
+ * [TeraRanger Duo](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-duo/)
+ 
 Link to ROS Wiki package documentation: [Here](http://wiki.ros.org/teraranger)
 
 ## Dependencies
