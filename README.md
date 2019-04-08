@@ -148,60 +148,54 @@ where <sensor_name> is the name of your sensor (e.g. one, evo).
 
 ### TeraRanger Evo Thermal 33/90
 
-<img src="https://www.terabee.com/wp-content/uploads/2018/12/Evo-thermaldiagonal-with-labels.jpg" width="500"/>
+<img src="https://www.terabee.com/wp-content/uploads/2019/04/TR-EVO-T90-USB-3-1024x1024-1.jpg" width="500"/>
 
 | Information |
 | -------------- |
-|[Product page Evo Thermal 33/90](https://www.terabee.com/portfolio-item/teraranger-evo-thermal/)|
-|[Specification sheet](https://www.terabee.com/wp-content/uploads/2018/12/TeraRanger-Evo-Thermal-Specification-Sheet.pdf)|
-|[Online shop](http://www.teraranger.com/product/teraranger-evo-thermal/)|
+| Product pages [Evo Thermal 33](https://www.terabee.com/shop/thermal-cameras/teraranger-evo-thermal-33/) / [Evo Thermal 90](https://www.terabee.com/shop/thermal-cameras/teraranger-evo-thermal-90/)|
+|[Specification sheet](https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-Evo-Thermal-Specification-Sheet-1-2.pdf)|
 
 ### TeraRanger Evo 64px
 
-<img src="https://www.terabee.com/wp-content/uploads/2018/09/Evo-64px-no-background-1.png" width="300"/>
+<img src="https://www.terabee.com/wp-content/uploads/2019/04/TR-EVO-64PX-USB-3.jpg " width="300"/>
 
 | Information |
 | -------------- |
-|[Product page Evo 64px](https://www.terabee.com/portfolio-item/teraranger-evo-64px-multi-pixel-time-of-flight-sensor/)|
-|[Specification sheet](https://www.terabee.com/wp-content/uploads/2018/10/TeraRanger-Evo-64px-Specification-sheet.pdf)|
-|[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
+|[Product page Evo 64px](https://www.terabee.com/shop/3d-tof-cameras/teraranger-evo-64px/)|
+|[Specification sheet](https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-Evo-64px-Specification-sheet-2-1.pdf)|
 
 ### TeraRanger Evo 3m
 
-<img src="https://www.terabee.com/wp-content/uploads/2018/08/TeraRanger-Evo-3m-bottom-picture-450px.jpg" width="300"/>
+<img src="https://www.terabee.com/wp-content/uploads/2019/03/4-teraranger-evo-3m-short-range-ir-distance-sensor-usb.jpg" width="300"/>
 
 | Information |
 | -------------- |
-|[Product page Evo 3m](https://www.terabee.com/portfolio-item/teraranger-evo-3m/)|
-|[Specification sheet](http://www.terabee.com/wp-content/uploads/2018/09/TeraRanger-Evo-3m-Specification-sheet.pdf)|
-|[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
+|[Product page Evo 3m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-3m/)|
+|[Specification sheet](https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-Evo-3m-Specification-sheet-1.pdf)|
 
 ### TeraRanger Evo 60m/Evo 600Hz
 
-<img src="http://www.teraranger.com/wp-content/uploads/2017/04/DSC0977-Editar.jpg" width="300"/>
+<img src="https://www.terabee.com/wp-content/uploads/2019/04/TR-EVO-60M-USB-1.jpg" width="300"/>
 
 | Information |
 | -------------- |
-|[Product page Evo 60m](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/) / [Product page Evo 600Hz](https://www.terabee.com/portfolio-item/teraranger-evo-600hz/)|
-|[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/#specifications)|
-|[Online shop](http://www.teraranger.com/product/teraranger-evo/)|
+|Product pages [Evo 60m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-60m/) / [Evo 600Hz](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-600hz/)|
+|Specification sheets [Evo 60m](https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-Evo-60m-Specification-sheet.pdf) / [Evo 600Hz](https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-Evo-600Hz-Specification-sheet-1.pdf)|
 
 ### TeraRanger One
 
-<img src="http://www.teraranger.com/wp-content/uploads/2016/04/TeraRanger-Frame-Side-View.jpg" width="300"/>
+<img src="https://www.terabee.com/wp-content/uploads/2019/03/6-teraranger-one-small-tof-sensor.jpg" width="300"/>
 
 | Information |
 | -------------- |
-|[Product page](https://www.terabee.com/portfolio-item/teraranger-one/)|
-|[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-one/#teraranger-specifications)|
-|[Online shop](http://www.teraranger.com/product-category/sensors/) |
+|[Product page](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-one/)|
+|[Specification sheet](https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-One-Specification-Sheet1-1.pdf)|
 
 ### TeraRanger Duo
 
-<img src="http://www.teraranger.com/wp-content/uploads/2014/06/TRduo.jpg" width="300"/>
+<img src="https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-Duo.png" width="300"/>
 
 | Information |
 | -------------- |
-|[Product page](https://www.terabee.com/portfolio-item/teraranger-duo/)|
-|[Specification sheet](https://www.terabee.com/portfolio-item/teraranger-duo/#teraranger-specifications)|
-|[Online shop](http://www.teraranger.com/product-category/sensors/) |
+|[Product page](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-duo/)|
+|[Specification sheet](https://www.terabee.com/wp-content/uploads/2019/03/TeraRangerDuospecificationsheet-1.pdf)|
