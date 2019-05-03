@@ -2,7 +2,7 @@
 <package>
   <name>teraranger</name>
   <version>2.0.1</version>
-  <description>The teraranger package</description>
+  <description>This package provides ros nodes for single sensors from Terabee</description>
 
   <maintainer email="krzysztof.zurad@terabee.com">Krzysztof Żurad</maintainer>
   <maintainer email="pierre-louis.kabaradjian@terabee.com">Pierre-Louis Kabaradjian</maintainer>
