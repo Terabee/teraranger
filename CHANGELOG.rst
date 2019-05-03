@@ -2,8 +2,8 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2019-05-03)
+------------------
 * Update package description
 * Update links in Readme
 * Set 64px mode to distance+ambient on start (`#23 <https://github.com/Terabee/teraranger/issues/23>`_)
