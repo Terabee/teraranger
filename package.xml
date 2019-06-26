@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <package>
   <name>teraranger</name>
-  <version>1.2.1</version>
+  <version>2.0.1</version>
   <description>The teraranger package</description>
 
-  <maintainer email="mateusz.sadowski@terabee.com">Mateusz Sadowski</maintainer>
   <maintainer email="krzysztof.zurad@terabee.com">Krzysztof Żurad</maintainer>
   <maintainer email="pierre-louis.kabaradjian@terabee.com">Pierre-Louis Kabaradjian</maintainer>
   <maintainer email="baptiste.potier@terabee.com">Baptiste Potier</maintainer>
