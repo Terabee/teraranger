@@ -2,6 +2,17 @@
 Changelog for package teraranger
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.1.0 (2019-05-03)
+------------------
+* Update package description
+* Update links in Readme
+* Set 64px mode to distance+ambient on start (`#23 <https://github.com/Terabee/teraranger/issues/23>`_)
+  Fix issue `#22 <https://github.com/Terabee/teraranger/issues/22>`_
+* Add pre-release flag for travis
+* Repository/add travis ci (`#26 <https://github.com/Terabee/teraranger/issues/26>`_)
+* Merge pull request `#24 <https://github.com/Terabee/teraranger/issues/24>`_ from Terabee/pre-release
+* Contributors: Morten Fyhn Amundsen, Pierre-Louis Kabaradjian
+
 2.0.1 (2019-02-11)
 ------------------
 * Prevent unintended modification on temp_array when clipping values
