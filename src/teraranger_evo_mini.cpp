@@ -1,9 +1,9 @@
-#include <teraranger/teraranger_evo.h>
+#include <teraranger/teraranger_evo_mini.h>
 
 namespace teraranger
 {
 
-TerarangerEvo::TerarangerEvo()
+TerarangerEvoMini::TerarangerEvoMini()
 {
   // Get parameters and namespace
   ros::NodeHandle private_node_handle_("~");
@@ -15,7 +15,7 @@ TerarangerEvo::TerarangerEvo()
   private_node_handle_.param("frame_id", frame_id_, std::string("base_range"));
 
   //Publishers
-  range_publisher_ = nh_.advertise<sensor_msgs::Range>("teraranger_evo", 2);
+  range_publisher_ = nh_.advertise<sensor_msgs::Range>("teraranger_evo_mini", 2);
 
   // Serial Port init
   serial_port_.setPort(portname_);
@@ -46,52 +46,53 @@ TerarangerEvo::TerarangerEvo()
   setMode(ENABLE_CMD, 5);
   setMode(BINARY_MODE, 4);
 
-  // Initialize range message
-  range_msg.field_of_view = field_of_view;
+//   // Initialize range message
+//   range_msg.field_of_view = field_of_view;
 
-//  private_node_handle_.deleteParam("sensor_type");
-  private_node_handle_.getParam("sensor_type", sensor_type_);
-  ROS_INFO("[%s] sensor type: %s", ros::this_node::getName().c_str(), sensor_type_.c_str());
+// //  private_node_handle_.deleteParam("sensor_type");
+//   private_node_handle_.getParam("sensor_type", sensor_type_);
+//   ROS_INFO("[%s] sensor type: %s", ros::this_node::getName().c_str(), sensor_type_.c_str());
 
-  if (sensor_type_ == "Evo_60m")
-  {
-    range_msg.max_range = EVO_60M_MAX;
-    range_msg.min_range = EVO_60M_MIN;
-  }
+//   if (sensor_type_ == "Evo_60m")
+//   {
+//     range_msg.max_range = EVO_60M_MAX;
+//     range_msg.min_range = EVO_60M_MIN;
+//   }
 
-  else if (sensor_type_ == "Evo_600Hz")
-  {
-    range_msg.max_range = EVO_600HZ_MAX;
-    range_msg.min_range = EVO_600HZ_MIN;
-  }
+//   else if (sensor_type_ == "Evo_600Hz")
+//   {
+//     range_msg.max_range = EVO_600HZ_MAX;
+//     range_msg.min_range = EVO_600HZ_MIN;
+//   }
 
-  else if (sensor_type_ == "Evo_3m")
-  {
-    range_msg.max_range = EVO_3M_MAX;
-    range_msg.min_range = EVO_3M_MIN;
-  }
+//   else if (sensor_type_ == "Evo_3m")
+//   {
+//     range_msg.max_range = EVO_3M_MAX;
+//     range_msg.min_range = EVO_3M_MIN;
+//   }
 
-  else if (!private_node_handle_.hasParam("sensor_type"))
-  {
-   ROS_INFO("No evo type set, Evo 60m by default");
-   private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
-   range_msg.max_range = EVO_60M_MAX;
-   range_msg.min_range = EVO_60M_MIN;
-  }
-  else
-  {
-   ROS_INFO("Unknow Evo type, Evo 60m by default");
-   private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
-   range_msg.max_range = EVO_60M_MAX;
-   range_msg.min_range = EVO_60M_MIN;
-  }
+//   else if (!private_node_handle_.hasParam("sensor_type"))
+//   {
+//    ROS_INFO("No evo type set, Evo 60m by default");
+//    private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
+//    range_msg.max_range = EVO_60M_MAX;
+//    range_msg.min_range = EVO_60M_MIN;
+//   }
+//   else
+//   {
+//    ROS_INFO("Unknow Evo type, Evo 60m by default");
+//    private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
+//    range_msg.max_range = EVO_60M_MAX;
+//    range_msg.min_range = EVO_60M_MIN;
+//   }
 
-  range_msg.header.frame_id = frame_id_;
-  range_msg.radiation_type = sensor_msgs::Range::INFRARED;
+//   range_msg.header.frame_id = frame_id_;
+//   range_msg.radiation_type = sensor_msgs::Range::INFRARED;
 }
-TerarangerEvo::~TerarangerEvo() {}
 
-void TerarangerEvo::setMode(const char *c, int length)
+TerarangerEvoMini::~TerarangerEvoMini() {}
+
+void TerarangerEvoMini::setMode(const char *c, int length)
 {
   if(!serial_port_.write((uint8_t*)c, length))
   {
@@ -100,7 +101,7 @@ void TerarangerEvo::setMode(const char *c, int length)
   serial_port_.flushOutput();
 }
 
-void TerarangerEvo::serialDataCallback(uint8_t single_character)
+void TerarangerEvoMini::serialDataCallback(uint8_t single_character)
 {
   static uint8_t input_buffer[BUFFER_SIZE];
   static int buffer_ctr = 0;
@@ -171,7 +172,7 @@ void TerarangerEvo::serialDataCallback(uint8_t single_character)
   bzero(&input_buffer, BUFFER_SIZE);
 }
 
-void TerarangerEvo::spin()
+void TerarangerEvoMini::spin()
 {
   static uint8_t buffer[1];
   while(ros::ok())
@@ -192,9 +193,9 @@ void TerarangerEvo::spin()
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "teraranger_evo");
-  teraranger::TerarangerEvo evo;
-  evo.spin();
+  ros::init(argc, argv, "teraranger_evo_mini");
+  teraranger::TerarangerEvoMini evo_mini;
+  evo_mini.spin();
 
   return 0;
 }

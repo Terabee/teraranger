@@ -3,7 +3,11 @@
 #include <sensor_msgs/Range.h>
 #include <serial/serial.h>
 #include <ros/ros.h>
+
 #include <teraranger/helper_lib.h>
+#include <dynamic_reconfigure/server.h>
+#include <teraranger/EvoMiniConfig.h>
+#include <teraranger_array/RangeArray.h>
 #include <limits>
 
 #define OUT_OF_RANGE_VALUE 0xFFFF
@@ -28,7 +32,6 @@ namespace teraranger
 {
 static const char ENABLE_CMD[5] = {(char)0x00, (char)0x52, (char)0x02, (char)0x01, (char)0xDF};
 
-static const uint8_t BUFFER_SIZE = 4;
 static const char TEXT_MODE[4] = {(char)0x00, (char)0x11, (char)0x01, (char)0x45};
 static const char BINARY_MODE[4] = {(char)0x00, (char)0x11, (char)0x02, (char)0x4C};
 static const char SINGLE_RANGE_MODE[4] = {(char)0x00, (char)0x21, (char)0x01, (char)0xBC};
@@ -36,12 +39,13 @@ static const char MULTI_RANGE_MODE[4] = {(char)0x00, (char)0x21, (char)0x02, (ch
 static const char LONG_RANGE_MODE[4] = {(char)0x00, (char)0x61, (char)0x03, (char)0xE9};
 static const char SHORT_RANGE_MODE[4] = {(char)0x00, (char)0x61, (char)0x01, (char)0xE7};
 
+static const uint8_t BUFFER_SIZE = 10;
 
-class TerarangerEvo
+class TerarangerEvoMini
 {
   public:
-    TerarangerEvo();
-    virtual ~TerarangerEvo();
+    TerarangerEvoMini();
+    virtual ~TerarangerEvoMini();
 
     void serialDataCallback(uint8_t data);
 
@@ -59,12 +63,16 @@ class TerarangerEvo
     std::string ns_;
     std::string sensor_type_;
 
+    void dynParamCallback(const teraranger::EvoMiniConfig &config, uint32_t level);
+    dynamic_reconfigure::Server<teraranger::EvoMiniConfig> dyn_param_server_;
+    dynamic_reconfigure::Server<teraranger::EvoMiniConfig>::CallbackType dyn_param_server_callback_function_;
 
     void spin();
 
   private:
     const float field_of_view = 0.0349066f;
-    const std::string frame_id = "base_range_";
+    //const std::string frame_id = "base_range_";
     sensor_msgs::Range range_msg;
+
 };
 }
