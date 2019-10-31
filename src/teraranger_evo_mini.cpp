@@ -108,7 +108,14 @@ void TerarangerEvoMini::setMode(const char *c, int length)
   uint8_t ack_buffer[ACK_LENGTH];
   bool status = 0;
 
-  if(serial_port_.read(ack_buffer, ACK_LENGTH))
+  // Dismiss buffered data until ACK header is found
+  bool got_header = false;
+  while(!got_header){
+    serial_port_.read(ack_buffer, 1);
+    if(ack_buffer[0] == ACK_HEADER) got_header = true;
+  }
+
+  if(serial_port_.read(ack_buffer+1, ACK_LENGTH-1)) // Read 3 more chars and append them to the buffer after the header
   {
     status = processAck(ack_buffer, (uint8_t*)c);
   }
@@ -129,11 +136,6 @@ void TerarangerEvoMini::setMode(const char *c, int length)
 bool TerarangerEvoMini::processAck(uint8_t* ack_buffer, const uint8_t* cmd)
 {
   uint8_t crc = HelperLib::crc8(ack_buffer, ACK_LENGTH-1);
-
-  ROS_INFO("Header char %c", ack_buffer[0]);
-  ROS_INFO("Header char %c", ack_buffer[1]);
-  ROS_INFO("Header char %c", ack_buffer[2]);
-  ROS_INFO("Header char %c", ack_buffer[3]);
 
   if (crc == ack_buffer[ACK_LENGTH-1])// Check is ACK frame is ok
   {
