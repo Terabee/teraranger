@@ -43,8 +43,12 @@ TerarangerEvoMini::TerarangerEvoMini()
               portname_.c_str());
 
   // Set binary mode
-  setMode(ENABLE_CMD, 5);
   setMode(BINARY_MODE, 4);
+
+  // Dynamic reconfigure
+  dyn_param_server_callback_function_ =
+    boost::bind(&TerarangerEvoMini::dynParamCallback, this, _1, _2);
+  dyn_param_server_.setCallback(dyn_param_server_callback_function_);
 
 //   // Initialize range message
 //   range_msg.field_of_view = field_of_view;
@@ -170,6 +174,58 @@ void TerarangerEvoMini::serialDataCallback(uint8_t single_character)
   }
   buffer_ctr = 0;
   bzero(&input_buffer, BUFFER_SIZE);
+}
+
+void TerarangerEvoMini::reconfigure_pixel_mode(
+  const teraranger::EvoMiniConfig &config)
+{
+  ROS_INFO("[%s] Reconfigure call: Pixel mode", ros::this_node::getName().c_str());
+  if (config.Pixel_mode == teraranger::EvoMini_Single)
+  {
+    setMode(SINGLE_RANGE_MODE, 4);
+  }
+  else if (config.Pixel_mode == teraranger::EvoMini_Multi)
+  {
+    setMode(MULTI_RANGE_MODE, 4);
+  }
+  else ROS_ERROR("[%s] Invalid reconfigure option", ros::this_node::getName().c_str());
+}
+
+void TerarangerEvoMini::reconfigure_range_mode(
+  const teraranger::EvoMiniConfig &config)
+{
+  ROS_INFO("[%s] Reconfigure call: Range mode", ros::this_node::getName().c_str());
+  if (config.Pixel_mode == teraranger::EvoMini_Single)
+  {
+    setMode(SHORT_RANGE_MODE, 4);
+  }
+  else if (config.Pixel_mode == teraranger::EvoMini_Multi)
+  {
+    setMode(LONG_RANGE_MODE, 4);
+  }
+  else ROS_ERROR("[%s] Invalid reconfigure option", ros::this_node::getName().c_str());
+}
+
+void TerarangerEvoMini::dynParamCallback(
+    const teraranger::EvoMiniConfig &config, uint32_t level)
+{
+  switch(level)
+  {
+    case 0xffffffff:// Catching first reconfigure call
+      ROS_INFO("[%s] Initial reconfigure call", ros::this_node::getName().c_str());
+      reconfigure_pixel_mode(config);
+      reconfigure_range_mode(config);
+      break;
+    case 0:// Set the mode dynamically
+      reconfigure_pixel_mode(config);
+      break;
+    case 1:// Set the rate dynamically
+      reconfigure_range_mode(config);
+      break;
+    default:
+      ROS_ERROR("[%s] Invalid reconfigure level : %d", ros::this_node::getName().c_str(), level);
+      break;
+  }
 }
 
 void TerarangerEvoMini::spin()

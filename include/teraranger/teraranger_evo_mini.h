@@ -74,5 +74,10 @@ class TerarangerEvoMini
     //const std::string frame_id = "base_range_";
     sensor_msgs::Range range_msg;
 
+    void reconfigure_pixel_mode(
+      const teraranger::EvoMiniConfig &config);
+    void reconfigure_range_mode(
+      const teraranger::EvoMiniConfig &config);
+
 };
 }
