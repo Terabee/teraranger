@@ -183,69 +183,122 @@ void TerarangerEvoMini::serialDataCallback(uint8_t single_character)
   static int buffer_ctr = 0;
   static int seq_ctr = 0;
 
-  if (single_character == RANGE_FRAME_HEADER && buffer_ctr == 0)
+  ROS_DEBUG("Buffer counter %d Current char in buffer %d", buffer_ctr, single_character);
+
+  if (buffer_ctr == 0)
   {
-    input_buffer[buffer_ctr] = single_character;
-    buffer_ctr++;
+    if (single_character == RANGE_FRAME_HEADER)
+    {
+      input_buffer[buffer_ctr++] = single_character;
+
+      ROS_DEBUG("T detected");
+    }
     return;
   }
-  else if (buffer_ctr >= 1 && buffer_ctr < BUFFER_SIZE-1)
+  else if (buffer_ctr == RANGE_FRAME_LENGTH_SINGLE-1)
   {
-    input_buffer[buffer_ctr] = single_character;
-    buffer_ctr++;
-    return;
-  }
-  if (buffer_ctr == RANGE_FRAME_LENGTH_SINGLE-1)
-  {
-    input_buffer[buffer_ctr] = single_character;
+    ROS_DEBUG("Enough chars for single-range frame");
+
+    input_buffer[buffer_ctr++] = single_character;
     uint8_t crc = HelperLib::crc8(input_buffer, RANGE_FRAME_LENGTH_SINGLE-1);
     if(crc == input_buffer[RANGE_FRAME_LENGTH_SINGLE-1])
     {
-      int16_t range = input_buffer[1] << 8;
-      range |= input_buffer[2];
-
-      float final_range;
-      float float_range = range * VALUE_TO_METER_FACTOR;
-
-      if(range == TOO_CLOSE_VALUE)// Too close, 255 is for short range
-      {
-        final_range = -std::numeric_limits<float>::infinity();
-      }
-      else if(range == OUT_OF_RANGE_VALUE)// Out of range
-      {
-        final_range = std::numeric_limits<float>::infinity();
-      }
-      else if(range == INVALID_MEASURE)// Cannot measure
-      {
-        final_range = std::numeric_limits<float>::quiet_NaN();
-      }
-      // Enforcing min and max range
-      else if(float_range > range_msg.max_range)
-      {
-        final_range = std::numeric_limits<float>::infinity();
-      }
-      else if(float_range < range_msg.min_range)
-      {
-        final_range = -std::numeric_limits<float>::infinity();
-      }
-      else
-      {
-        final_range = float_range;
-      }
-
-      range_msg.header.stamp = ros::Time::now();
-      range_msg.header.seq = seq_ctr++;
-      range_msg.range = final_range;
-      range_msg.header.stamp = ros::Time::now();
-      range_publisher_.publish(range_msg);
+      ROS_DEBUG("Valid single-range frame");
+      processSingleRangeFrame(input_buffer, seq_ctr);
     }
     else
     {
-      ROS_DEBUG("[%s] crc missmatch", ros::this_node::getName().c_str());
+      ROS_DEBUG("[%s] crc missmatch for single-range frame", ros::this_node::getName().c_str());
+      return;
     }
+  }
+  else if (buffer_ctr == RANGE_FRAME_LENGTH_MULTI-1)
+  {
+    ROS_DEBUG("Enough chars for multi-range frame");
+
+    input_buffer[buffer_ctr++] = single_character;
+    uint8_t crc = HelperLib::crc8(input_buffer, RANGE_FRAME_LENGTH_MULTI-1);
+    if(crc == input_buffer[RANGE_FRAME_LENGTH_MULTI-1])
+    {
+      ROS_DEBUG("Valid multi-range frame");
+      processMultiRangeFrame(input_buffer, seq_ctr);
+    }
+    else
+    {
+      ROS_DEBUG("[%s] crc missmatch for multi-range frame", ros::this_node::getName().c_str());
+    }
+  }
+  else if (buffer_ctr < RANGE_FRAME_LENGTH_MULTI-1)
+  {
+    input_buffer[buffer_ctr++] = single_character;
+
+    ROS_DEBUG("Gathering chars");
+    return;
   }
   buffer_ctr = 0;
   bzero(&input_buffer, BUFFER_SIZE);
+
+  // Appending current char to hook next frame
+  if (single_character == RANGE_FRAME_HEADER)
+  {
+    input_buffer[buffer_ctr++] = single_character;
+  }
+}
+
+float TerarangerEvoMini::processRawRangeValue(uint16_t raw_range)
+{
+  float float_range = raw_range * VALUE_TO_METER_FACTOR;
+  float final_range = 0;
+
+  if(raw_range == TOO_CLOSE_VALUE)// Too close, 255 is for short raw_range
+  {
+    final_range = -std::numeric_limits<float>::infinity();
+  }
+  else if(raw_range == OUT_OF_RANGE_VALUE)// Out of range
+  {
+    final_range = std::numeric_limits<float>::infinity();
+  }
+  else if(raw_range == INVALID_MEASURE)// Cannot measure
+  {
+    final_range = std::numeric_limits<float>::quiet_NaN();
+  }
+  else
+  {
+    final_range = float_range;
+  }
+  return final_range;
+}
+
+void TerarangerEvoMini::processSingleRangeFrame(uint8_t * frame_buffer, int seq)
+{
+  uint16_t range = frame_buffer[1] << 8;
+  range |= frame_buffer[2];
+
+  float processed_range = processRawRangeValue(range);
+
+  ROS_DEBUG("Raw range %d, processed range %f", range, processed_range);
+
+  range_msg.header.stamp = ros::Time::now();
+  range_msg.header.seq = seq++;
+  range_msg.range = processed_range;
+  range_msg.header.stamp = ros::Time::now();
+  range_publisher_.publish(range_msg);
+}
+
+void TerarangerEvoMini::processMultiRangeFrame(uint8_t * frame_buffer, int seq)
+{
+  int16_t range = frame_buffer[1] << 8;
+  range |= frame_buffer[2];
+
+  float processed_range = processRawRangeValue(range);
+
+  range_msg.header.stamp = ros::Time::now();
+  range_msg.header.seq = seq++;
+  range_msg.range = processed_range;
+  range_msg.header.stamp = ros::Time::now();
+  range_publisher_.publish(range_msg);
+
+  ROS_INFO("Range [%f]", processed_range);
 }
 
 void TerarangerEvoMini::reconfigure_pixel_mode(

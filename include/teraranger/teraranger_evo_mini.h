@@ -83,6 +83,9 @@ class TerarangerEvoMini
     sensor_msgs::Range range_msg;
 
     bool processAck(uint8_t* ack_buffer, const uint8_t* cmd);
+    float processRawRangeValue(uint16_t raw_range);
+    void processSingleRangeFrame(uint8_t * frame_buffer, int seq);
+    void processMultiRangeFrame(uint8_t * frame_buffer, int seq);
 
     void reconfigure_pixel_mode(
       const teraranger::EvoMiniConfig &config);
