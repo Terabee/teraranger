@@ -267,11 +267,11 @@ void TerarangerEvoMini::reconfigure_range_mode(
   const teraranger::EvoMiniConfig &config)
 {
   ROS_INFO("[%s] Reconfigure call: Range mode", ros::this_node::getName().c_str());
-  if (config.Pixel_mode == teraranger::EvoMini_Single)
+  if (config.Range_mode == teraranger::EvoMini_Short)
   {
     setMode(SHORT_RANGE_MODE, 4);
   }
-  else if (config.Pixel_mode == teraranger::EvoMini_Multi)
+  else if (config.Range_mode == teraranger::EvoMini_Long)
   {
     setMode(LONG_RANGE_MODE, 4);
   }
