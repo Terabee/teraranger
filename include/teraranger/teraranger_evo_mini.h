@@ -58,28 +58,24 @@ class TerarangerEvoMini
     TerarangerEvoMini();
     virtual ~TerarangerEvoMini();
 
-    void serialDataCallback(uint8_t data);
-
-    bool loadParameters();
-    void setMode(const char *c, int length);
-
-    ros::NodeHandle nh_;
-    ros::Publisher range_publisher_;
-
-    serial::Serial serial_port_;
-    boost::function<void(uint8_t)> serial_data_callback_function_;
-
+    void spin();
+  private:
     std::string portname_;
     std::string frame_id_;
     std::string ns_;
+    ros::NodeHandle nh_;
+    ros::Publisher range_publisher_;
+    ros::Publisher ranges_publisher_;
+
+    serial::Serial serial_port_;
+    boost::function<void(uint8_t)> serial_data_callback_function_;
+    void serialDataCallback(uint8_t data);
+    void setMode(const char *c, int length);
 
     void dynParamCallback(const teraranger::EvoMiniConfig &config, uint32_t level);
     dynamic_reconfigure::Server<teraranger::EvoMiniConfig> dyn_param_server_;
     dynamic_reconfigure::Server<teraranger::EvoMiniConfig>::CallbackType dyn_param_server_callback_function_;
 
-    void spin();
-
-  private:
     sensor_msgs::Range range_msg;
     teraranger_array::RangeArray range_array_msg;
 
