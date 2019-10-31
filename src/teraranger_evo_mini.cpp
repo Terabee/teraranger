@@ -98,11 +98,81 @@ TerarangerEvoMini::~TerarangerEvoMini() {}
 
 void TerarangerEvoMini::setMode(const char *c, int length)
 {
+  serial_port_.flushInput();
   if(!serial_port_.write((uint8_t*)c, length))
   {
-    ROS_ERROR("Timeout or error while writing serial");
+    ROS_ERROR("[%s] Timeout or error while writing to serial", ros::this_node::getName().c_str());
   }
   serial_port_.flushOutput();
+
+  uint8_t ack_buffer[ACK_LENGTH];
+  bool status = 0;
+
+  if(serial_port_.read(ack_buffer, ACK_LENGTH))
+  {
+    status = processAck(ack_buffer, (uint8_t*)c);
+  }
+  else
+  {
+    ROS_ERROR("[%s] Timeout or error while waiting for ACK", ros::this_node::getName().c_str());
+  }
+
+  if(status){
+    ROS_INFO("[%s] Command successful", ros::this_node::getName().c_str());
+  }
+  else
+  {
+    ROS_ERROR("[%s] Command not applied and/or not recognized", ros::this_node::getName().c_str());
+  }
+}
+
+bool TerarangerEvoMini::processAck(uint8_t* ack_buffer, const uint8_t* cmd)
+{
+  uint8_t crc = HelperLib::crc8(ack_buffer, ACK_LENGTH-1);
+
+  ROS_INFO("Header char %c", ack_buffer[0]);
+  ROS_INFO("Header char %c", ack_buffer[1]);
+  ROS_INFO("Header char %c", ack_buffer[2]);
+  ROS_INFO("Header char %c", ack_buffer[3]);
+
+  if (crc == ack_buffer[ACK_LENGTH-1])// Check is ACK frame is ok
+  {
+    if(ack_buffer[0] == ACK_HEADER)
+    {
+      if((cmd[1] >> 4) == ack_buffer[1])// See if the ack is from the same register as the command
+      {
+        if (ack_buffer[2] == ACK_VALUE)
+        {
+          return true;
+        }
+        else if (ack_buffer[2] == NACK_VALUE)
+        {
+          ROS_ERROR("[%s] Command was not acknowledged", ros::this_node::getName().c_str());
+          return false;
+        }
+        else
+        {
+          ROS_ERROR("[%s] Invalid acknowledgment value", ros::this_node::getName().c_str());
+          return false;
+        }
+      }
+      else
+      {
+        ROS_ERROR("[%s] Wrong ack register", ros::this_node::getName().c_str());
+        return false;
+      }
+    }
+    else
+    {
+      ROS_ERROR("[%s] Wrong ack header", ros::this_node::getName().c_str());
+      return false;
+    }
+  }
+  else
+  {
+    ROS_ERROR("[%s] ACK frame crc missmatch", ros::this_node::getName().c_str());
+    return false;
+  }
 }
 
 void TerarangerEvoMini::serialDataCallback(uint8_t single_character)
@@ -111,7 +181,7 @@ void TerarangerEvoMini::serialDataCallback(uint8_t single_character)
   static int buffer_ctr = 0;
   static int seq_ctr = 0;
 
-  if (single_character == 'T' && buffer_ctr == 0)
+  if (single_character == RANGE_FRAME_HEADER && buffer_ctr == 0)
   {
     input_buffer[buffer_ctr] = single_character;
     buffer_ctr++;
@@ -123,11 +193,11 @@ void TerarangerEvoMini::serialDataCallback(uint8_t single_character)
     buffer_ctr++;
     return;
   }
-  if (buffer_ctr == BUFFER_SIZE-1)
+  if (buffer_ctr == RANGE_FRAME_LENGTH_SINGLE-1)
   {
     input_buffer[buffer_ctr] = single_character;
-    uint8_t crc = HelperLib::crc8(input_buffer, BUFFER_SIZE-1);
-    if(crc == input_buffer[BUFFER_SIZE-1])
+    uint8_t crc = HelperLib::crc8(input_buffer, RANGE_FRAME_LENGTH_SINGLE-1);
+    if(crc == input_buffer[RANGE_FRAME_LENGTH_SINGLE-1])
     {
       int16_t range = input_buffer[1] << 8;
       range |= input_buffer[2];

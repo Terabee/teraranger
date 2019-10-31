@@ -28,6 +28,16 @@
 #define SERIAL_SPEED 115200
 #define SERIAL_TIMEOUT_MS 1000
 
+#define ACK_HEADER 0x14
+#define ACK_VALUE 0x00
+#define NACK_VALUE 0xFF
+#define ACK_LENGTH 4
+
+#define BUFFER_SIZE 10
+#define RANGE_FRAME_HEADER 'T'
+#define RANGE_FRAME_LENGTH_SINGLE 4
+#define RANGE_FRAME_LENGTH_MULTI 10
+
 namespace teraranger
 {
 static const char ENABLE_CMD[5] = {(char)0x00, (char)0x52, (char)0x02, (char)0x01, (char)0xDF};
@@ -38,8 +48,6 @@ static const char SINGLE_RANGE_MODE[4] = {(char)0x00, (char)0x21, (char)0x01, (c
 static const char MULTI_RANGE_MODE[4] = {(char)0x00, (char)0x21, (char)0x02, (char)0xB5};
 static const char LONG_RANGE_MODE[4] = {(char)0x00, (char)0x61, (char)0x03, (char)0xE9};
 static const char SHORT_RANGE_MODE[4] = {(char)0x00, (char)0x61, (char)0x01, (char)0xE7};
-
-static const uint8_t BUFFER_SIZE = 10;
 
 class TerarangerEvoMini
 {
@@ -73,6 +81,8 @@ class TerarangerEvoMini
     const float field_of_view = 0.0349066f;
     //const std::string frame_id = "base_range_";
     sensor_msgs::Range range_msg;
+
+    bool processAck(uint8_t* ack_buffer, const uint8_t* cmd);
 
     void reconfigure_pixel_mode(
       const teraranger::EvoMiniConfig &config);
