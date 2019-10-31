@@ -25,6 +25,9 @@
 #define EVO_MINI_MIN_RANGE_MULTI_SHORT 0.04
 #define EVO_MINI_MIN_RANGE_MULTI_LONG 0.04
 
+#define EVO_MINI_SINGLE_FOV 0.34906585039
+#define EVO_MINI_MULTI_FOV 0.47123889803
+
 #define SERIAL_SPEED 115200
 #define SERIAL_TIMEOUT_MS 1000
 
@@ -69,7 +72,6 @@ class TerarangerEvoMini
     std::string portname_;
     std::string frame_id_;
     std::string ns_;
-    std::string sensor_type_;
 
     void dynParamCallback(const teraranger::EvoMiniConfig &config, uint32_t level);
     dynamic_reconfigure::Server<teraranger::EvoMiniConfig> dyn_param_server_;
@@ -78,9 +80,8 @@ class TerarangerEvoMini
     void spin();
 
   private:
-    const float field_of_view = 0.0349066f;
-    //const std::string frame_id = "base_range_";
     sensor_msgs::Range range_msg;
+    teraranger_array::RangeArray range_array_msg;
 
     bool processAck(uint8_t* ack_buffer, const uint8_t* cmd);
     float processRawRangeValue(uint16_t raw_range);
@@ -91,6 +92,5 @@ class TerarangerEvoMini
       const teraranger::EvoMiniConfig &config);
     void reconfigure_range_mode(
       const teraranger::EvoMiniConfig &config);
-
 };
 }
