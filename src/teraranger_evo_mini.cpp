@@ -294,7 +294,7 @@ void TerarangerEvoMini::processMultiRangeFrame(uint8_t * frame_buffer, int seq)
 
       float processed_range = processRawRangeValue(range);
 
-      ROS_INFO("Range [%f]", processed_range);
+      ROS_DEBUG("Range [%f]", processed_range);
 
       range_array_msg.ranges.at(i).header.stamp = timestamp;
       range_array_msg.ranges.at(i).header.seq = seq++;
