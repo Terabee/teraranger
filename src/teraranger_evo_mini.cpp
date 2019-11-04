@@ -51,8 +51,8 @@ TerarangerEvoMini::TerarangerEvoMini()
     boost::bind(&TerarangerEvoMini::dynParamCallback, this, _1, _2);
   dyn_param_server_.setCallback(dyn_param_server_callback_function_);
 
-  // Initialize rangeArray
-  for (size_t i=0; i < 4; i++)
+  // Initialize RangeArray message
+  for (size_t i=0; i < EVO_MINI_MULTI_PIXEL_COUNT; i++)
   {
     sensor_msgs::Range range;
     range.field_of_view = EVO_MINI_MULTI_FOV;
@@ -282,18 +282,27 @@ void TerarangerEvoMini::processSingleRangeFrame(uint8_t * frame_buffer, int seq)
 
 void TerarangerEvoMini::processMultiRangeFrame(uint8_t * frame_buffer, int seq)
 {
-  int16_t range = frame_buffer[1] << 8;
-  range |= frame_buffer[2];
+  ros::Time timestamp = ros::Time::now();
+  for(size_t i = 0; i < range_array_msg.ranges.size(); i++)
+    {
+      // Convert bytes to range
+      // Doesn't go out of range because of fixed buffer size as long as the number of sensor is not above 8
+      char c1 = frame_buffer[2 * i + 1];
+      char c2 = frame_buffer[2 * i + 2];
+      int16_t range = (c1 & 0x0FF) << 8;
+      range |= (c2 & 0x0FF);
 
-  float processed_range = processRawRangeValue(range);
+      float processed_range = processRawRangeValue(range);
 
-  range_msg.header.stamp = ros::Time::now();
-  range_msg.header.seq = seq++;
-  range_msg.range = processed_range;
-  range_msg.header.stamp = ros::Time::now();
-  range_publisher_.publish(range_msg);
+      ROS_INFO("Range [%f]", processed_range);
 
-  ROS_INFO("Range [%f]", processed_range);
+      range_array_msg.ranges.at(i).header.stamp = timestamp;
+      range_array_msg.ranges.at(i).header.seq = seq++;
+      range_array_msg.ranges.at(i).range = processed_range;
+    }
+  range_array_msg.header.seq = (int)seq/8;
+  range_array_msg.header.stamp = timestamp;
+  ranges_publisher_.publish(range_array_msg);
 }
 
 void TerarangerEvoMini::reconfigure_pixel_mode(
