@@ -278,6 +278,8 @@ void TerarangerEvoMini::processSingleRangeFrame(uint8_t * frame_buffer, int seq)
   range_msg.range = processed_range;
   range_msg.header.stamp = ros::Time::now();
   range_publisher_.publish(range_msg);
+
+  checkSubscribers(false);
 }
 
 void TerarangerEvoMini::processMultiRangeFrame(uint8_t * frame_buffer, int seq)
@@ -303,9 +305,31 @@ void TerarangerEvoMini::processMultiRangeFrame(uint8_t * frame_buffer, int seq)
   range_array_msg.header.seq = (int)seq/8;
   range_array_msg.header.stamp = timestamp;
   ranges_publisher_.publish(range_array_msg);
+
+  checkSubscribers(true);
 }
 
-void TerarangerEvoMini::reconfigure_pixel_mode(
+void TerarangerEvoMini::checkSubscribers(bool multi)
+{
+  int nb_sub_ranges = ranges_publisher_.getNumSubscribers();
+  int nb_sub_range = range_publisher_.getNumSubscribers();
+  if(multi)
+  {
+    if(nb_sub_ranges == 0 && nb_sub_range > 0)
+    {
+      ROS_WARN_THROTTLE(60, "Detected subscriber(s) only on \"range\" topic but the sensor is outputting multiple ranges");
+    }
+  }
+  else
+  {
+    if(nb_sub_range == 0 && nb_sub_ranges > 0)
+    {
+      ROS_WARN_THROTTLE(60, "Detected subscriber(s) only on \"ranges\" topic but the sensor is outputting a single range");
+    }
+  }
+}
+
+void TerarangerEvoMini::reconfigurePixelMode(
   const teraranger::EvoMiniConfig &config)
 {
   ROS_INFO("[%s] Reconfigure call: Pixel mode", ros::this_node::getName().c_str());
@@ -320,7 +344,7 @@ void TerarangerEvoMini::reconfigure_pixel_mode(
   else ROS_ERROR("[%s] Invalid reconfigure option", ros::this_node::getName().c_str());
 }
 
-void TerarangerEvoMini::reconfigure_range_mode(
+void TerarangerEvoMini::reconfigureRangeMode(
   const teraranger::EvoMiniConfig &config)
 {
   ROS_INFO("[%s] Reconfigure call: Range mode", ros::this_node::getName().c_str());
@@ -342,14 +366,14 @@ void TerarangerEvoMini::dynParamCallback(
   {
     case 0xffffffff:// Catching first reconfigure call
       ROS_INFO("[%s] Initial reconfigure call", ros::this_node::getName().c_str());
-      reconfigure_pixel_mode(config);
-      reconfigure_range_mode(config);
+      reconfigurePixelMode(config);
+      reconfigureRangeMode(config);
       break;
     case 0:// Set the mode dynamically
-      reconfigure_pixel_mode(config);
+      reconfigurePixelMode(config);
       break;
     case 1:// Set the rate dynamically
-      reconfigure_range_mode(config);
+      reconfigureRangeMode(config);
       break;
     default:
       ROS_ERROR("[%s] Invalid reconfigure level : %d", ros::this_node::getName().c_str(), level);
