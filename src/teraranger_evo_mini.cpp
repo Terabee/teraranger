@@ -45,6 +45,8 @@ TerarangerEvoMini::TerarangerEvoMini()
 
   // Set binary mode
   setMode(BINARY_MODE, 4);
+  current_max = EVO_MINI_MAX_RANGE_SINGLE_LONG;
+  current_min = EVO_MINI_MIN_RANGE_SINGLE_LONG;
 
   // Dynamic reconfigure
   dyn_param_server_callback_function_ =
@@ -56,8 +58,8 @@ TerarangerEvoMini::TerarangerEvoMini()
   {
     sensor_msgs::Range range;
     range.field_of_view = EVO_MINI_MULTI_FOV;
-    range.max_range = EVO_MINI_MAX_RANGE_SINGLE_LONG;
-    range.min_range = EVO_MINI_MIN_RANGE_SINGLE_LONG;
+    range.max_range = current_max;
+    range.min_range = current_min;
     range.radiation_type = sensor_msgs::Range::INFRARED;
     range.range = 0.0;
     // set the right range frame depending of the namespace
@@ -74,8 +76,8 @@ TerarangerEvoMini::TerarangerEvoMini()
 
   // Initialize Range message
   range_msg.field_of_view = EVO_MINI_SINGLE_FOV;
-  range_msg.max_range = EVO_MINI_MAX_RANGE_SINGLE_LONG;
-  range_msg.min_range = EVO_MINI_MIN_RANGE_SINGLE_LONG;
+  range_msg.max_range = current_max;
+  range_msg.min_range = current_min;
   // set the right range frame depending of the namespace
   if (ns_ == "")
   {
@@ -273,10 +275,12 @@ void TerarangerEvoMini::processSingleRangeFrame(uint8_t * frame_buffer, int seq)
 
   ROS_DEBUG("Raw range %d, processed range %f", range, processed_range);
 
-  range_msg.header.stamp = ros::Time::now();
   range_msg.header.seq = seq++;
   range_msg.range = processed_range;
   range_msg.header.stamp = ros::Time::now();
+  range_msg.max_range = current_max;
+  range_msg.min_range = current_min;
+
   range_publisher_.publish(range_msg);
 
   checkSubscribers(false);
@@ -301,6 +305,8 @@ void TerarangerEvoMini::processMultiRangeFrame(uint8_t * frame_buffer, int seq)
       range_array_msg.ranges.at(i).header.stamp = timestamp;
       range_array_msg.ranges.at(i).header.seq = seq++;
       range_array_msg.ranges.at(i).range = processed_range;
+      range_array_msg.ranges.at(i).max_range = current_max;
+      range_array_msg.ranges.at(i).min_range = current_min;
     }
   range_array_msg.header.seq = (int)seq/8;
   range_array_msg.header.stamp = timestamp;
@@ -336,10 +342,14 @@ void TerarangerEvoMini::reconfigurePixelMode(
   if (config.Pixel_mode == teraranger::EvoMini_Single)
   {
     setMode(SINGLE_RANGE_MODE, 4);
+    current_pixel_mode = config.Pixel_mode;
+    updateExtrema();
   }
   else if (config.Pixel_mode == teraranger::EvoMini_Multi)
   {
     setMode(MULTI_RANGE_MODE, 4);
+    current_pixel_mode = config.Pixel_mode;
+    updateExtrema();
   }
   else ROS_ERROR("[%s] Invalid reconfigure option", ros::this_node::getName().c_str());
 }
@@ -351,12 +361,46 @@ void TerarangerEvoMini::reconfigureRangeMode(
   if (config.Range_mode == teraranger::EvoMini_Short)
   {
     setMode(SHORT_RANGE_MODE, 4);
+    current_range_mode = config.Range_mode;
+    updateExtrema();
   }
   else if (config.Range_mode == teraranger::EvoMini_Long)
   {
     setMode(LONG_RANGE_MODE, 4);
+    current_range_mode = config.Range_mode;
+    updateExtrema();
   }
   else ROS_ERROR("[%s] Invalid reconfigure option", ros::this_node::getName().c_str());
+}
+
+void TerarangerEvoMini::updateExtrema()
+{
+  if(current_range_mode == teraranger::EvoMini_Long)
+  {
+    if (current_pixel_mode == teraranger::EvoMini_Single)
+    {
+      current_max = EVO_MINI_MAX_RANGE_SINGLE_LONG;
+      current_min = EVO_MINI_MIN_RANGE_SINGLE_LONG;
+    }
+    else if (current_pixel_mode == teraranger::EvoMini_Multi)
+    {
+      current_max = EVO_MINI_MAX_RANGE_MULTI_LONG;
+      current_min = EVO_MINI_MIN_RANGE_MULTI_LONG;
+    }
+  }
+  else if (current_range_mode == teraranger::EvoMini_Short)
+  {
+    if (current_pixel_mode == teraranger::EvoMini_Single)
+    {
+      current_max = EVO_MINI_MAX_RANGE_SINGLE_SHORT;
+      current_min = EVO_MINI_MIN_RANGE_SINGLE_SHORT; 
+    }
+    else if (current_pixel_mode == teraranger::EvoMini_Multi)
+    {
+      current_max = EVO_MINI_MAX_RANGE_MULTI_SHORT;
+      current_min = EVO_MINI_MIN_RANGE_MULTI_SHORT;
+    } 
+  }
 }
 
 void TerarangerEvoMini::dynParamCallback(

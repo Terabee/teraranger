@@ -20,10 +20,10 @@
 #define EVO_MINI_MAX_RANGE_MULTI_SHORT 1.35
 #define EVO_MINI_MAX_RANGE_MULTI_LONG 1.65
 
-#define EVO_MINI_MIN_RANGE_SINGLE_SHORT 0.04
-#define EVO_MINI_MIN_RANGE_SINGLE_LONG 0.02
-#define EVO_MINI_MIN_RANGE_MULTI_SHORT 0.04
-#define EVO_MINI_MIN_RANGE_MULTI_LONG 0.04
+#define EVO_MINI_MIN_RANGE_SINGLE_SHORT 0.03
+#define EVO_MINI_MIN_RANGE_SINGLE_LONG 0.03
+#define EVO_MINI_MIN_RANGE_MULTI_SHORT 0.03
+#define EVO_MINI_MIN_RANGE_MULTI_LONG 0.03
 
 #define EVO_MINI_SINGLE_FOV 0.34906585039
 #define EVO_MINI_MULTI_FOV 0.47123889803
@@ -77,9 +77,14 @@ class TerarangerEvoMini
     void dynParamCallback(const teraranger::EvoMiniConfig &config, uint32_t level);
     dynamic_reconfigure::Server<teraranger::EvoMiniConfig> dyn_param_server_;
     dynamic_reconfigure::Server<teraranger::EvoMiniConfig>::CallbackType dyn_param_server_callback_function_;
+    int current_pixel_mode = teraranger::EvoMini_Single;
+    int current_range_mode = teraranger::EvoMini_Long;
+    void updateExtrema();
 
     sensor_msgs::Range range_msg;
     teraranger_array::RangeArray range_array_msg;
+    float current_min;
+    float current_max;
 
     void checkSubscribers(bool multi);
 
