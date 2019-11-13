@@ -59,8 +59,19 @@ catkin_make
 source devel/setup.bash
 ```
 
-## Running the TeraRanger Evo Thermal 33/90
+## Running the TeraRanger Evo Mini
+\
+After your workspace is built and sourced:
+```
+rosrun teraranger evo_mini _portname:=/dev/ttyACM0
+```
 
+This node is publishing on two topics:
+* /teraranger_evo_mini/range: Range message when the sensor is in single-pixel mode
+* /teraranger_evo_mini/ranges: RangeArray (from teraranger_array package) message with 4 ranges when the sensor is in multi-pixel mode
+
+## Running the TeraRanger Evo Thermal 33/90
+\
 After your workspace is built and sourced:
 ```
 rosrun teraranger evo_thermal.py _portname:=/dev/ttyACM0
