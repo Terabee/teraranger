@@ -3,7 +3,7 @@
 
  This package is a collection of nodes for TeraRanger single sensor modules.
 
-
+ * [TeraRanger Evo Mini](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-mini/)
  * [TeraRanger Evo Thermal 33/90](https://www.terabee.com/sensors-modules/thermal-cameras/)
  * [TeraRanger Evo 64px](https://www.terabee.com/shop/3d-tof-cameras/teraranger-evo-64px/)
  * [TeraRanger Evo 60m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-60m/)
@@ -68,7 +68,7 @@ rosrun teraranger evo_mini _portname:=/dev/ttyACM0
 
 This node is publishing on two topics:
 * /teraranger_evo_mini/range: Range message when the sensor is in single-pixel mode
-* /teraranger_evo_mini/ranges: RangeArray (from teraranger_array package) message with 4 ranges when the sensor is in multi-pixel mode
+* /teraranger_evo_mini/ranges: RangeArray (from teraranger_array package) message with multiple ranges when the sensor is in multi-pixel mode
 
 ## Running the TeraRanger Evo Thermal 33/90
 \
@@ -157,6 +157,15 @@ rostopic echo /teraranger_<sensor_name>
 where <sensor_name> is the name of your sensor (e.g. one, evo).
 
 ## Product pictures and where to get the sensors
+
+### TeraRanger Evo Mini
+
+<img src="https://www.terabee.com/wp-content/uploads/2019/11/TeraRanger-Evo-Mini-image.jpg" width="300"/>
+
+| Information |
+| -------------- |
+|[Product page](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-mini/)|
+|[Specification sheet]()|
 
 ### TeraRanger Evo Thermal 33/90
 

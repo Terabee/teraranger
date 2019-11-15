@@ -14,31 +14,40 @@ With its 10cm to 3m range, 100Hz fixed update rate and greater accuracy(+/-2cm),
 
 For more information about TeraRanger '''Evo 60m/Evo 600Hz/Evo 3m''':
 
-*[[http://www.terabee.com/portfolio-item/teraranger-evo-infrared-distance-sensor/]]
+*[[https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-60m//]]
 
 *[[https://www.terabee.com/portfolio-item/teraranger-evo-3m/]]
 
 *[[https://www.terabee.com/portfolio-item/teraranger-evo-600hz/]]
 
-*[[http://www.teraranger.com/product/teraranger-evo/]]
+*[[https://www.terabee.com/sensors-modules/lidar-tof-range-finders//]]
+-----
+TeraRanger '''Evo Mini'''
+                        {{attachment:TeraRanger_EvoMini.jpg}}
+
+For more information about TeraRanger '''Evo 60m/Evo 600Hz/Evo 3m''':
+
+*[[https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-mini/]]
 -----
 
 TeraRanger '''Evo Thermal 33/90''' Monitor heat variations, detect movement and capture the unseen! In a compact and affordable design, ideal for OEM integration in Smart City, Smart building, Robotics and Industrial applications.
 For more information about TeraRanger '''Evo Thermal 33/90''':
                        {{attachment:TeraRanger_Evo_Thermal_33_90.jpg}}
 
-*[[https://www.terabee.com/portfolio-item/teraranger-evo-thermal/]]
+*[[https://www.terabee.com/shop/thermal-cameras/teraranger-evo-thermal-90/]]
 
-*[[http://www.teraranger.com/product/teraranger-evo/]]
+*[[https://www.terabee.com/shop/thermal-cameras/teraranger-evo-thermal-33/]]
+
+*[[https://www.terabee.com/sensors-modules/thermal-cameras/]]
 -----
 
 TeraRanger '''Evo 64px''' is a lightweight, high-performance multi-pixel sensor based on infrared Time-of-Flight (ToF) technology.
 For more information about TeraRanger '''Evo 64px''':
                        {{attachment:TeraRanger_Evo_64px.jpg}}
 
-*[[https://www.terabee.com/portfolio-item/teraranger-evo-64px-multi-pixel-time-of-flight-sensor/]]
+*[[https://www.terabee.com/shop/3d-tof-cameras/teraranger-evo-64px/]]
 
-*[[http://www.teraranger.com/product/teraranger-evo/]]
+*[[https://www.terabee.com/sensors-modules/3d-tof-cameras/]]
 -----
 
 TeraRanger '''One''' is a lightweight, high-performance distance measurement sensor based on infrared Time-of-Flight (ToF) technology.
@@ -46,9 +55,9 @@ TeraRanger '''One''' is a lightweight, high-performance distance measurement sen
 
 For more information about TeraRanger '''One''':
 
-*[[https://www.terabee.com/portfolio-item/teraranger-one/]]
+*[[https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-one/]]
 
-*[[http://www.teraranger.com/product/teraranger-one-distance-sensor-for-drones-and-robotics/]]
+*[[https://www.terabee.com/sensors-modules/lidar-tof-range-finders/]]
 -----
 TeraRanger Duo is a powerful surface detection solution for any environment! Combining our advanced infrared Time-of-Flight (ToF) technology with classic ultrasound technology, you’ll never again have issues detecting the proximity of difficult surfaces.
 
@@ -56,9 +65,9 @@ TeraRanger Duo is a powerful surface detection solution for any environment! Com
 
 For more information about TeraRanger '''Duo''':
 
-*[[https://www.terabee.com/portfolio-item/teraranger-duo/]]
+*[[https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-duo/]]
 
-*[[http://www.teraranger.com/product/teraranger-duo/]]
+*[[https://www.terabee.com/sensors-modules/lidar-tof-range-finders/]]
 
 == API Stability ==
 The ROS API of this driver should be considered stable.
@@ -68,7 +77,7 @@ The ROS API of this driver should be considered stable.
 #!clearsilver CS/NodeAPI
 desc = This node is the official driver for TeraRanger '''Evo 60m''', TeraRanger '''Evo 600Hz''' and TeraRanger '''Evo 3m'''.
 node.0 {
-name = Evo (Evo 60m/Evo 600Hz/Evo 3m)
+name = evo
 
 pub {
   0.name = /teraranger_evo
@@ -87,6 +96,39 @@ param {
 }
 
 node.1 {
+    name = evo_mini
+    desc = This node is the official driver for TeraRanger '''Evo Mini'''
+    pub {
+      0.name = /teraranger_evo_mini/range
+      0.type = sensor_msgs/Range
+      0.desc = Provides distance data when sensor is in single-pixel mode
+      1.name = /teraranger_evo_mini/ranges
+      1.type = teraranger_array/RangeArray
+      1.desc = Provides distance data when sensor is in multi-pixel mode
+    }
+
+    param {
+      group.0 {
+        name=Static Parameters
+        0.name = _portname
+        0.type = str, default: "/dev/ttyACM0"
+        0.desc = The device path to open.
+      }
+      group.1 {
+        name=Dynamic Parameters
+        0.name = Pixel_mode
+        0.desc = Set the pixel mode: 0 = Single , 1 = Multi
+        0.type = int
+        0.default = 0
+        1.name = Range_mode
+        1.desc = Set the ranging mode: 0 = Long , 1 = Short
+        1.type = int
+        1.default = 0
+      }
+    }
+  }
+
+node.2 {
     name = Evo_Thermal
     desc = This node is the official driver for TeraRanger '''Evo Thermal 33/90'''
     pub {
@@ -141,7 +183,7 @@ node.1 {
     }
 }
 
-node.2 {
+node.3 {
     name = Evo_64px
     desc = This node is the official driver for TeraRanger '''Evo 64px'''
     pub {
@@ -189,8 +231,8 @@ node.2 {
     }
 }
 
-node.3 {
-name = One
+node.4 {
+name = one
 desc = This node is the official driver for TeraRanger '''One'''
 pub {
   0.name = /teraranger_one
@@ -205,8 +247,8 @@ param {
 }
 }
 
-node.4 {
-name = Duo
+node.5 {
+name = duo
 desc = This node is the official driver for TeraRanger '''Duo'''
 pub {
   0.name = /teraranger_duo
