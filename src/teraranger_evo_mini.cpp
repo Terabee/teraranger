@@ -44,7 +44,7 @@ TerarangerEvoMini::TerarangerEvoMini()
               portname_.c_str());
 
   // Set binary mode
-  setMode(BINARY_MODE, 4);
+  //setMode(BINARY_MODE, 4);
   current_max = EVO_MINI_MAX_RANGE_SINGLE_LONG;
   current_min = EVO_MINI_MIN_RANGE_SINGLE_LONG;
 
@@ -53,29 +53,11 @@ TerarangerEvoMini::TerarangerEvoMini()
     boost::bind(&TerarangerEvoMini::dynParamCallback, this, _1, _2);
   dyn_param_server_.setCallback(dyn_param_server_callback_function_);
 
-  // Initialize RangeArray message
-  for (size_t i=0; i < EVO_MINI_MULTI_PIXEL_COUNT; i++)
-  {
-    sensor_msgs::Range range;
-    range.field_of_view = EVO_MINI_MULTI_FOV;
-    range.max_range = current_max;
-    range.min_range = current_min;
-    range.radiation_type = sensor_msgs::Range::INFRARED;
-    range.range = 0.0;
-    // set the right range frame depending of the namespace
-    if (ns_ == "")
-    {
-     range.header.frame_id = frame_id_;
-    }
-    else
-    {
-     range.header.frame_id = ns_ + '_'+ frame_id_;
-    }
-    range_array_msg.ranges.push_back(range);
-  }
+  current_fov = EVO_MINI_TWO_BY_TWO_FOV;
+  initRangeArrayMessage(EVO_MINI_MAX_PIXEL_COUNT);
 
   // Initialize Range message
-  range_msg.field_of_view = EVO_MINI_SINGLE_FOV;
+  range_msg.field_of_view = EVO_MINI_SINGLE_PIXEL_FOV;
   range_msg.max_range = current_max;
   range_msg.min_range = current_min;
   // set the right range frame depending of the namespace
@@ -92,6 +74,31 @@ TerarangerEvoMini::TerarangerEvoMini()
 }
 
 TerarangerEvoMini::~TerarangerEvoMini() {}
+
+void TerarangerEvoMini::initRangeArrayMessage(int nb_ranges)
+{
+  range_array_msg.ranges.clear();
+  // Initialize RangeArray message
+  for (size_t i=0; i < nb_ranges; i++)
+  {
+    sensor_msgs::Range range;
+    range.field_of_view = current_fov;
+    range.max_range = current_max;
+    range.min_range = current_min;
+    range.radiation_type = sensor_msgs::Range::INFRARED;
+    range.range = 0.0;
+    // set the right range frame depending of the namespace
+    if (ns_ == "")
+    {
+     range.header.frame_id = frame_id_;
+    }
+    else
+    {
+     range.header.frame_id = ns_ + '_'+ frame_id_;
+    }
+    range_array_msg.ranges.push_back(range);
+  }
+}
 
 void TerarangerEvoMini::setMode(const char *c, int length)
 {
@@ -192,13 +199,13 @@ void TerarangerEvoMini::serialDataCallback(uint8_t single_character)
     }
     return;
   }
-  else if (buffer_ctr == RANGE_FRAME_LENGTH_SINGLE-1)
+  else if (buffer_ctr == RANGE_FRAME_LENGTH_SINGLE_PIXEL-1)
   {
     ROS_DEBUG("Enough chars for single-range frame");
 
     input_buffer[buffer_ctr++] = single_character;
-    uint8_t crc = HelperLib::crc8(input_buffer, RANGE_FRAME_LENGTH_SINGLE-1);
-    if(crc == input_buffer[RANGE_FRAME_LENGTH_SINGLE-1])
+    uint8_t crc = HelperLib::crc8(input_buffer, RANGE_FRAME_LENGTH_SINGLE_PIXEL-1);
+    if(crc == input_buffer[RANGE_FRAME_LENGTH_SINGLE_PIXEL-1])
     {
       ROS_DEBUG("Valid single-range frame");
       processSingleRangeFrame(input_buffer, seq_ctr);
@@ -209,23 +216,39 @@ void TerarangerEvoMini::serialDataCallback(uint8_t single_character)
       return;
     }
   }
-  else if (buffer_ctr == RANGE_FRAME_LENGTH_MULTI-1)
+  else if (buffer_ctr == RANGE_FRAME_LENGTH_TWO_PIXEL-1)
   {
-    ROS_DEBUG("Enough chars for multi-range frame");
+    ROS_DEBUG("Enough chars for two-range frame");
 
     input_buffer[buffer_ctr++] = single_character;
-    uint8_t crc = HelperLib::crc8(input_buffer, RANGE_FRAME_LENGTH_MULTI-1);
-    if(crc == input_buffer[RANGE_FRAME_LENGTH_MULTI-1])
+    uint8_t crc = HelperLib::crc8(input_buffer, RANGE_FRAME_LENGTH_TWO_PIXEL-1);
+    if(crc == input_buffer[RANGE_FRAME_LENGTH_TWO_PIXEL-1])
     {
-      ROS_DEBUG("Valid multi-range frame");
-      processMultiRangeFrame(input_buffer, seq_ctr);
+      ROS_DEBUG("Valid two-range frame");
+      processMultiRangeFrame(input_buffer, seq_ctr, 2);
     }
     else
     {
-      ROS_DEBUG("[%s] crc missmatch for multi-range frame", ros::this_node::getName().c_str());
+      ROS_DEBUG("[%s] crc missmatch for two-range frame", ros::this_node::getName().c_str());
     }
   }
-  else if (buffer_ctr < RANGE_FRAME_LENGTH_MULTI-1)
+  else if (buffer_ctr == RANGE_FRAME_LENGTH_TWO_BY_TWO-1)
+  {
+    ROS_DEBUG("Enough chars for two-by-two-range frame");
+
+    input_buffer[buffer_ctr++] = single_character;
+    uint8_t crc = HelperLib::crc8(input_buffer, RANGE_FRAME_LENGTH_TWO_BY_TWO-1);
+    if(crc == input_buffer[RANGE_FRAME_LENGTH_TWO_BY_TWO-1])
+    {
+      ROS_DEBUG("Valid two-by-two-range frame");
+      processMultiRangeFrame(input_buffer, seq_ctr, 4);
+    }
+    else
+    {
+      ROS_DEBUG("[%s] crc missmatch for two-by-two-range frame", ros::this_node::getName().c_str());
+    }
+  }
+  else if (buffer_ctr < RANGE_FRAME_LENGTH_TWO_BY_TWO-1)
   {
     input_buffer[buffer_ctr++] = single_character;
 
@@ -286,7 +309,7 @@ void TerarangerEvoMini::processSingleRangeFrame(uint8_t * frame_buffer, int seq)
   checkSubscribers(false);
 }
 
-void TerarangerEvoMini::processMultiRangeFrame(uint8_t * frame_buffer, int seq)
+void TerarangerEvoMini::processMultiRangeFrame(uint8_t * frame_buffer, int seq, int range_count)
 {
   ros::Time timestamp = ros::Time::now();
   for(size_t i = 0; i < range_array_msg.ranges.size(); i++)
@@ -339,16 +362,26 @@ void TerarangerEvoMini::reconfigurePixelMode(
   const teraranger::EvoMiniConfig &config)
 {
   ROS_INFO("[%s] Reconfigure call: Pixel mode", ros::this_node::getName().c_str());
-  if (config.Pixel_mode == teraranger::EvoMini_Single)
+  if (config.Pixel_mode == teraranger::EvoMini_Single_pixel)
   {
-    setMode(SINGLE_RANGE_MODE, 4);
+    setMode(SINGLE_PIXEL_MODE, 4);
     current_pixel_mode = config.Pixel_mode;
     updateExtrema();
   }
-  else if (config.Pixel_mode == teraranger::EvoMini_Multi)
+  else if (config.Pixel_mode == teraranger::EvoMini_Two_pixel)
   {
-    setMode(MULTI_RANGE_MODE, 4);
+    setMode(TWO_PIXEL_MODE, 4);
+    current_fov = EVO_MINI_TWO_PIXEL_FOV;
     current_pixel_mode = config.Pixel_mode;
+    initRangeArrayMessage(2);
+    updateExtrema();
+  }
+  else if (config.Pixel_mode == teraranger::EvoMini_Two_by_two_pixel)
+  {
+    setMode(TWO_BY_TWO_PIXEL_MODE, 4);
+    current_fov = EVO_MINI_TWO_BY_TWO_FOV;
+    current_pixel_mode = config.Pixel_mode;
+    initRangeArrayMessage(4);
     updateExtrema();
   }
   else ROS_ERROR("[%s] Invalid reconfigure option", ros::this_node::getName().c_str());
@@ -377,28 +410,38 @@ void TerarangerEvoMini::updateExtrema()
 {
   if(current_range_mode == teraranger::EvoMini_Long)
   {
-    if (current_pixel_mode == teraranger::EvoMini_Single)
+    if (current_pixel_mode == teraranger::EvoMini_Single_pixel)
     {
       current_max = EVO_MINI_MAX_RANGE_SINGLE_LONG;
       current_min = EVO_MINI_MIN_RANGE_SINGLE_LONG;
     }
-    else if (current_pixel_mode == teraranger::EvoMini_Multi)
+    else if (current_pixel_mode == teraranger::EvoMini_Two_pixel)
     {
-      current_max = EVO_MINI_MAX_RANGE_MULTI_LONG;
-      current_min = EVO_MINI_MIN_RANGE_MULTI_LONG;
+      current_max = EVO_MINI_MAX_RANGE_TWO_PIXEL_LONG;
+      current_min = EVO_MINI_MIN_RANGE_TWO_PIXEL_LONG;
+    }
+    else if (current_pixel_mode == teraranger::EvoMini_Two_by_two_pixel)
+    {
+      current_max = EVO_MINI_MAX_RANGE_TWO_BY_TWO_LONG;
+      current_min = EVO_MINI_MIN_RANGE_TWO_BY_TWO_LONG;
     }
   }
   else if (current_range_mode == teraranger::EvoMini_Short)
   {
-    if (current_pixel_mode == teraranger::EvoMini_Single)
+    if (current_pixel_mode == teraranger::EvoMini_Single_pixel)
     {
       current_max = EVO_MINI_MAX_RANGE_SINGLE_SHORT;
       current_min = EVO_MINI_MIN_RANGE_SINGLE_SHORT; 
     }
-    else if (current_pixel_mode == teraranger::EvoMini_Multi)
+    else if (current_pixel_mode == teraranger::EvoMini_Two_pixel)
     {
-      current_max = EVO_MINI_MAX_RANGE_MULTI_SHORT;
-      current_min = EVO_MINI_MIN_RANGE_MULTI_SHORT;
+      current_max = EVO_MINI_MAX_RANGE_TWO_PIXEL_SHORT;
+      current_min = EVO_MINI_MIN_RANGE_TWO_PIXEL_SHORT;
+    }
+    else if (current_pixel_mode == teraranger::EvoMini_Two_by_two_pixel)
+    {
+      current_max = EVO_MINI_MAX_RANGE_TWO_BY_TWO_SHORT;
+      current_min = EVO_MINI_MIN_RANGE_TWO_BY_TWO_SHORT;
     } 
   }
 }
