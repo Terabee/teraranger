@@ -11,10 +11,11 @@
  * [TeraRanger Evo 3m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-3m/)
  * [TeraRanger One](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-one/)
  * [TeraRanger Duo](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-duo/)
- 
+
 Link to ROS Wiki package documentation: [Here](http://wiki.ros.org/teraranger)
 
 ## Dependencies
+
 This package depends on this [serial](http://wiki.ros.org/serial) library. To get it, execute the following command:
 
 ```
@@ -60,24 +61,26 @@ source devel/setup.bash
 ```
 
 ## Running the TeraRanger Evo Mini
-\
+
 After your workspace is built and sourced:
 ```
 rosrun teraranger evo_mini _portname:=/dev/ttyACM0
 ```
 
 This node is publishing on two topics:
+
 * /teraranger_evo_mini/range: Range message when the sensor is in single-pixel mode
 * /teraranger_evo_mini/ranges: RangeArray (from teraranger_array package) message with multiple ranges when the sensor is in multi-pixel mode
 
 ## Running the TeraRanger Evo Thermal 33/90
-\
+
 After your workspace is built and sourced:
 ```
 rosrun teraranger evo_thermal.py _portname:=/dev/ttyACM0
 ```
 
 This node is publishing on two topics:
+
 * /teraranger_evo_thermal/rgb_image: a color mapped RGB image based on thermal data
 * /teraranger_evo_thermal/raw_temp_array: an array of 1024 raw thermal data
 * /teraranger_evo_thermal/ptat: internal temperature of the sensor
@@ -90,6 +93,7 @@ rosrun teraranger evo_64px.py _portname:=/dev/ttyACM0
 ```
 
 This node is publishing on two topics:
+
 * /teraranger_evo_64px/depth_image: a colormapped RGB image based on depth data
 * /teraranger_evo_64px/point_cloud: a point cloud in the frame of the sensor
 
@@ -103,6 +107,7 @@ rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_60m
 ## Running the TeraRanger Evo 600Hz
 
 After your workspace is built and sourced:
+
 ```
 rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_600Hz
 ```
@@ -110,6 +115,7 @@ rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_600Hz
 ## Running the TeraRanger Evo 3m
 
 After your workspace is built and sourced:
+
 ```
 rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_3m
 ```

@@ -117,7 +117,7 @@ node.1 {
       group.1 {
         name=Dynamic Parameters
         0.name = Pixel_mode
-        0.desc = Set the pixel mode: 0 = Single , 1 = Multi
+        0.desc = Set the pixel mode: 0 = Single-pixel , 1 = Two-pixel, 2 = Two-by-two-pixel
         0.type = int
         0.default = 0
         1.name = Range_mode
