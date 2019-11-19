@@ -230,6 +230,7 @@ void TerarangerEvoMini::serialDataCallback(uint8_t single_character)
     else
     {
       ROS_DEBUG("[%s] crc missmatch for two-range frame", ros::this_node::getName().c_str());
+      return;
     }
   }
   else if (buffer_ctr == RANGE_FRAME_LENGTH_TWO_BY_TWO-1)
