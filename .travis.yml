@@ -20,7 +20,7 @@ env:
   global: # global settings for all jobs
     - ROS_REPO=ros
   matrix: # each line is a job
-    - ROS_DISTRO="indigo" PRERELEASE=true
+    #- ROS_DISTRO="indigo" PRERELEASE=true
     - ROS_DISTRO="kinetic" PRERELEASE=true
     - ROS_DISTRO="melodic" PRERELEASE=true
 
