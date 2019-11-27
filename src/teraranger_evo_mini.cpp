@@ -44,7 +44,7 @@ TerarangerEvoMini::TerarangerEvoMini()
               portname_.c_str());
 
   // Set binary mode
-  //setMode(BINARY_MODE, 4);
+  setMode(BINARY_MODE, 4);
   current_max = EVO_MINI_MAX_RANGE_SINGLE_LONG;
   current_min = EVO_MINI_MIN_RANGE_SINGLE_LONG;
 
