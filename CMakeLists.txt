@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   dynamic_reconfigure
   serial
+  teraranger_array
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread)
@@ -19,12 +20,13 @@ generate_dynamic_reconfigure_options(
   cfg/TerarangerDuo.cfg
   cfg/Evo64px.cfg
   cfg/EvoThermal.cfg
+  cfg/EvoMini.cfg
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp sensor_msgs std_msgs dynamic_reconfigure serial
+  CATKIN_DEPENDS roscpp sensor_msgs std_msgs dynamic_reconfigure serial teraranger_array
   DEPENDS Boost
 )
 
@@ -34,13 +36,19 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+add_executable(evo_mini src/teraranger_evo_mini.cpp src/helper_lib.cpp)
+target_link_libraries(evo_mini ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(evo_mini ${${PROJECT_NAME}_EXPORTED_TARGETS})
+add_dependencies(evo_mini ${catkin_EXPORTED_TARGETS})
+add_dependencies(evo_mini ${PROJECT_NAME}_gencfg)
+
 add_executable(evo src/teraranger_evo.cpp src/helper_lib.cpp)
 target_link_libraries(evo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 #add_dependencies(evo ${${PROJECT_NAME}_EXPORTED_TARGETS})
 #add_dependencies(evo ${PROJECT_NAME}_gencfg)
 
 add_executable(duo src/teraranger_duo.cpp src/helper_lib.cpp)
-add_dependencies(duo  ${catkin_EXPORTED_TARGETS})
+add_dependencies(duo ${catkin_EXPORTED_TARGETS})
 add_dependencies(duo ${PROJECT_NAME}_gencfg)
 target_link_libraries(duo ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
@@ -50,6 +58,7 @@ add_dependencies(one ${PROJECT_NAME}_gencfg)
 target_link_libraries(one ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 install( TARGETS
+  evo_mini
   evo
   one
   duo
