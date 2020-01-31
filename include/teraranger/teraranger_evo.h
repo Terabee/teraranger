@@ -49,7 +49,7 @@ class TerarangerEvo
     std::string frame_id_;
     std::string ns_;
     std::string sensor_type_;
-
+    std::string sensor_name_;
 
     void spin();
 

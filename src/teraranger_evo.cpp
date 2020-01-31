@@ -5,17 +5,22 @@ namespace teraranger
 
 TerarangerEvo::TerarangerEvo()
 {
-  // Get parameters and namespace
+  // Get parameters
   ros::NodeHandle private_node_handle_("~");
-  private_node_handle_.param("portname", portname_,
-                              std::string("/dev/ttyACM0"));
-  ns_ = ros::this_node::getNamespace();
-  ns_ = ros::names::clean(ns_);
-  ROS_INFO("node namespace: [%s]", ns_.c_str());
+
+  private_node_handle_.param("portname", portname_, std::string("/dev/ttyACM0"));
   private_node_handle_.param("frame_id", frame_id_, std::string("base_range"));
+  private_node_handle_.getParam("sensor_type", sensor_type_);
+  private_node_handle_.getParam("sensor_name", sensor_name_);
+
+  // Output loaded parameters to console for double checking
+  ROS_INFO("[%s] is up and running with the following parameters:", ros::this_node::getName().c_str());
+  ROS_INFO("[%s] portname: %s", ros::this_node::getName().c_str(), portname_.c_str());
+  ROS_INFO("[%s] sensor type: %s", ros::this_node::getName().c_str(), sensor_type_.c_str());
+  ROS_INFO("[%s] sensor name: %s", ros::this_node::getName().c_str(), sensor_name_.c_str());
 
   //Publishers
-  range_publisher_ = nh_.advertise<sensor_msgs::Range>("teraranger_evo", 2);
+  range_publisher_ = nh_.advertise<sensor_msgs::Range>("teraranger_evo/" + sensor_name_, 2);
 
   // Serial Port init
   serial_port_.setPort(portname_);
@@ -36,22 +41,12 @@ TerarangerEvo::TerarangerEvo()
     return;
   }
 
-  // Output loaded parameters to console for double checking
-  ROS_INFO("[%s] is up and running with the following parameters:",
-              ros::this_node::getName().c_str());
-  ROS_INFO("[%s] portname: %s", ros::this_node::getName().c_str(),
-              portname_.c_str());
-
   // Set binary mode
   setMode(ENABLE_CMD, 5);
   setMode(BINARY_MODE, 4);
 
   // Initialize range message
   range_msg.field_of_view = field_of_view;
-
-//  private_node_handle_.deleteParam("sensor_type");
-  private_node_handle_.getParam("sensor_type", sensor_type_);
-  ROS_INFO("[%s] sensor type: %s", ros::this_node::getName().c_str(), sensor_type_.c_str());
 
   if (sensor_type_ == "Evo_60m")
   {
@@ -73,22 +68,23 @@ TerarangerEvo::TerarangerEvo()
 
   else if (!private_node_handle_.hasParam("sensor_type"))
   {
-   ROS_INFO("No evo type set, Evo 60m by default");
-   private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
-   range_msg.max_range = EVO_60M_MAX;
-   range_msg.min_range = EVO_60M_MIN;
+    ROS_INFO("No evo type set, Evo 60m by default");
+    private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
+    range_msg.max_range = EVO_60M_MAX;
+    range_msg.min_range = EVO_60M_MIN;
   }
   else
   {
-   ROS_INFO("Unknow Evo type, Evo 60m by default");
-   private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
-   range_msg.max_range = EVO_60M_MAX;
-   range_msg.min_range = EVO_60M_MIN;
+    ROS_INFO("Unknow Evo type, Evo 60m by default");
+    private_node_handle_.param("sensor_type", sensor_type_, std::string("Evo_60m"));
+    range_msg.max_range = EVO_60M_MAX;
+    range_msg.min_range = EVO_60M_MIN;
   }
 
   range_msg.header.frame_id = frame_id_;
   range_msg.radiation_type = sensor_msgs::Range::INFRARED;
 }
+
 TerarangerEvo::~TerarangerEvo() {}
 
 void TerarangerEvo::setMode(const char *c, int length)
@@ -192,7 +188,7 @@ void TerarangerEvo::spin()
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "teraranger_evo");
+  ros::init(argc, argv, "teraranger_evo", ros::init_options::AnonymousName);
   teraranger::TerarangerEvo evo;
   evo.spin();
 
