@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="teraranger" type="evo_mini" name="teraranger_evo_mini" output="screen" required="True" >
+      <!-- Set the serial port name -->
+      <param name="portname" value="/dev/ttyACM2" />
+    </node>
+</launch>
