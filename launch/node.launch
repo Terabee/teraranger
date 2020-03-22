@@ -1,6 +1,8 @@
 <launch>
     <node pkg="teraranger" type="evo_mini" name="teraranger_evo_mini" output="screen" required="True" >
       <!-- Set the serial port name -->
-      <param name="portname" value="/dev/ttyACM2" />
+      <param name="portname" value="/dev/ttyACM3" />
+      <param name="Pixel_mode" value="0" />
+      <param name="Range_mode" value="0" />
     </node>
 </launch>
