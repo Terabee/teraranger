@@ -2,9 +2,9 @@
 
     <arg name="portname" default="/dev/ttyACM2" />
 
-    <node pkg="teraranger" type="evo_mini" name="teraranger_evo_mini" output="screen" required="True" >
+    <node pkg="teraranger" type="evo_mini" name="teraranger_evo_mini" output="screen" required="False" >
       <!-- Set the serial port name -->
-      <param name="portname" value="/dev/ttyACM2" />
+      <param name="portname" value="$(arg portname)" />
       <param name="Pixel_mode" value="0" />
       <param name="Range_mode" value="0" />
     </node>
