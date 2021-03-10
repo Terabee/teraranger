@@ -7,7 +7,8 @@
  * [TeraRanger Evo Thermal 33/90](https://www.terabee.com/sensors-modules/thermal-cameras/)
  * [TeraRanger Evo 64px](https://www.terabee.com/shop/3d-tof-cameras/teraranger-evo-64px/)
  * [TeraRanger Evo 60m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-60m/)
- * [TeraRanger Evo 600Hz](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-600hz/)
+ * [TeraRanger Evo 40m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-40m/)
+ * [TeraRanger Evo 15m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-15m/)
  * [TeraRanger Evo 3m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-3m/)
  * [TeraRanger One](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-one/)
  * [TeraRanger Duo](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-duo/)
@@ -104,6 +105,20 @@ After your workspace is built and sourced:
 rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_60m
 ```
 
+## Running the TeraRanger Evo 40m
+
+After your workspace is built and sourced:
+```
+rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_40m
+```
+
+## Running the TeraRanger Evo 15m
+
+After your workspace is built and sourced:
+```
+rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_15m
+```
+
 ## Running the TeraRanger Evo 600Hz
 
 After your workspace is built and sourced:
@@ -120,7 +135,9 @@ After your workspace is built and sourced:
 rosrun teraranger evo _portname:=/dev/ttyACM0 _sensor_type:=Evo_3m
 ```
 
+
 **WARNING: By default, if no sensor_type is specified, the default sensor chosen is the Evo 60m**
+
 
 ## Running the TeraRanger One
 
@@ -200,17 +217,16 @@ where <sensor_name> is the name of your sensor (e.g. one, evo).
 |[Product page Evo 3m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-3m/)|
 |[Specification sheet](https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-Evo-3m-Specification-sheet-1.pdf)|
 
-### TeraRanger Evo 60m/Evo 600Hz
+### TeraRanger Evo 60m/Evo 40m/Evo 15m
 
 <img src="https://www.terabee.com/wp-content/uploads/2019/04/TR-EVO-60M-USB-1.jpg" width="300"/>
 
 | Information |
 | -------------- |
-|Product pages [Evo 60m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-60m/) / [Evo 600Hz](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-600hz/)|
-|Specification sheets [Evo 60m](https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-Evo-60m-Specification-sheet.pdf) / [Evo 600Hz](https://www.terabee.com/wp-content/uploads/2019/03/TeraRanger-Evo-600Hz-Specification-sheet-1.pdf)|
+|Product pages [Evo 60m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-60m/) / [Evo 40m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-40m/) / [Evo 15m](https://www.terabee.com/shop/lidar-tof-range-finders/teraranger-evo-15m/)|
+|Specification sheets [Evo 60m](https://terabee.b-cdn.net/wp-content/uploads/2021/02/Specification-Sheet-Evo-60m.pdf) / [Evo 40m](https://terabee.b-cdn.net/wp-content/uploads/2021/02/Specification-Sheet-Evo-40m.pdf) / [Evo 15m](https://terabee.b-cdn.net/wp-content/uploads/2021/02/Specification-Sheet-Evo-15m.pdf)|
 
 ### TeraRanger One
-
 <img src="https://www.terabee.com/wp-content/uploads/2019/03/6-teraranger-one-small-tof-sensor.jpg" width="300"/>
 
 | Information |
