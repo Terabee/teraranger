@@ -59,6 +59,18 @@ TerarangerEvo::TerarangerEvo()
     range_msg.min_range = EVO_60M_MIN;
   }
 
+  if (sensor_type_ == "Evo_40m")
+  {
+    range_msg.max_range = EVO_40M_MAX;
+    range_msg.min_range = EVO_60M_MIN;
+  }
+
+  if (sensor_type_ == "Evo_15m")
+  {
+    range_msg.max_range = EVO_15M_MAX;
+    range_msg.min_range = EVO_60M_MIN;
+  }
+
   else if (sensor_type_ == "Evo_600Hz")
   {
     range_msg.max_range = EVO_600HZ_MAX;
