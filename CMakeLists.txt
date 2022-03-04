@@ -25,7 +25,6 @@ generate_dynamic_reconfigure_options(
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp sensor_msgs std_msgs dynamic_reconfigure serial teraranger_array
   DEPENDS Boost
 )
